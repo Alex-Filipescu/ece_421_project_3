@@ -1,1 +1,1 @@
-mod connect_four;
+pub(crate) mod connect_four;
