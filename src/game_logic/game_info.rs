@@ -1,5 +1,5 @@
 pub trait TwoPlayer {
-    fn get_next_player(&mut self) -> Player;
+    fn cycle_next_player(&mut self) -> Player;
 }
 
 pub trait GameState {
@@ -12,12 +12,15 @@ pub enum Player{
     PlayerTwo
 }
 
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum Message {
     Winner(Player),
     ColumnFull,
     NextPlayer(Player),
-    OutOfBounds
+    OutOfBounds,
+    NoWinner,
+    Tie,
+    InvalidCharacter
 }
 
 impl Player {

@@ -34,7 +34,7 @@ impl BoardState {
         BoardState{cols: col_vec, max_cols: cols, max_rows: rows}
     }
 
-    fn play_move(&mut self, player: Player, column: usize) -> Option<GridLocation>{
+    fn play_move(&mut self, column: usize, player: Player) -> Option<GridLocation>{
         for row in &mut self.cols[column] {
             if !row.owner.is_player() {
                 row.owner = player;
@@ -204,17 +204,20 @@ impl BoardState {
 
 impl ConnectFour {
     pub fn play_move(&mut self, column: usize) -> Message {
-        // The GUI should not allow the user to do this, but this is defensive programming
+        // The GUI should not allow the user to do these, but this is defensive programming
         if column >= self.board.max_cols {
             return Message::OutOfBounds;
         }
-        let current_player = &self.get_next_player();
-        let mut play_location = &self.board.play_move(current_player.clone(), column);
+        if self.winner.is_player(){
+            return Message::Winner(self.winner);
+        }
+        let current_player = &self.cycle_next_player();
+        let mut play_location = &self.board.play_move(column, current_player.clone());
         if play_location.is_none(){
             return Message::ColumnFull;
         }
-        // TODO: Set winner so it stops any more moves (make them reset or reset manually?)
         if self.board.check_winner(current_player.clone(), &mut play_location.clone().unwrap()){
+            self.winner = current_player.clone();
             return Message::Winner(current_player.clone())
         }
         return Message::NextPlayer(self.next_player.clone());
@@ -230,7 +233,7 @@ impl GameState for ConnectFour {
 }
 
 impl TwoPlayer for ConnectFour {
-    fn get_next_player(&mut self) -> Player {
+    fn cycle_next_player(&mut self) -> Player {
         match &self.next_player {
             Player::PlayerOne => {
                 self.next_player = Player::PlayerTwo;
@@ -238,7 +241,7 @@ impl TwoPlayer for ConnectFour {
             Player::PlayerTwo => {
                 self.next_player = Player::PlayerOne;
                 return Player::PlayerTwo},
-            _ => {panic!("Next player is none")}
+            _ => {panic!("Player is none")}
         }
     }
 }
@@ -258,3 +261,6 @@ impl fmt::Debug for ConnectFour {
         Ok(())
     }
 }
+
+
+// TODO: Test cases
