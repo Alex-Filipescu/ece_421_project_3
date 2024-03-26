@@ -93,31 +93,31 @@ impl BoardState {
         if col < self.max_cols-1 {
             if self.cols[col+1][row].owner == player{
                 current_chain += 1;
+                if col < self.max_cols-2 {
+                    if self.cols[col+2][row].owner == player{
+                        current_chain += 1;
+                        if col < self.max_cols-3 {
+                            if self.cols[col+3][row].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         if col > 0 {
             if self.cols[col-1][row].owner == player{
                 current_chain += 1;
-            }
-        }
-        if col < self.max_cols-2 {
-            if self.cols[col+2][row].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col > 1 {
-            if self.cols[col-2][row].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col < self.max_cols-3 {
-            if self.cols[col+3][row].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col > 2 {
-            if self.cols[col-3][row].owner == player{
-                current_chain += 1;
+                if col > 1 {
+                    if self.cols[col-2][row].owner == player{
+                        current_chain += 1;
+                        if col > 2 {
+                            if self.cols[col-3][row].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         return current_chain > 3;
@@ -127,31 +127,31 @@ impl BoardState {
         if col < self.max_cols-1 && row > 0{
             if self.cols[col+1][row-1].owner == player{
                 current_chain += 1;
+                if col < self.max_cols-2 && row > 1 {
+                    if self.cols[col+2][row-2].owner == player{
+                        current_chain += 1;
+                        if col < self.max_cols-3 && row > 2 {
+                            if self.cols[col+3][row-3].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         if col > 0 && row < self.max_rows-1{
             if self.cols[col-1][row+1].owner == player{
                 current_chain += 1;
-            }
-        }
-        if col < self.max_cols-2 && row > 1 {
-            if self.cols[col+2][row-2].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col > 1 && row < self.max_rows-2{
-            if self.cols[col-2][row+2].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col < self.max_cols-3 && row > 2 {
-            if self.cols[col+3][row-3].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col > 2 && row < self.max_rows-3{
-            if self.cols[col-3][row+3].owner == player{
-                current_chain += 1;
+                if col > 1 && row < self.max_rows-2{
+                    if self.cols[col-2][row+2].owner == player{
+                        current_chain += 1;
+                        if col > 2 && row < self.max_rows-3{
+                            if self.cols[col-3][row+3].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         return current_chain > 3;
@@ -161,31 +161,31 @@ impl BoardState {
         if row > 0{
             if self.cols[col][row-1].owner == player{
                 current_chain += 1;
+                if row > 1 {
+                    if self.cols[col][row-2].owner == player{
+                        current_chain += 1;
+                        if row > 2 {
+                            if self.cols[col][row-3].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         if row < self.max_rows-1{
             if self.cols[col][row+1].owner == player{
                 current_chain += 1;
-            }
-        }
-        if row > 1 {
-            if self.cols[col][row-2].owner == player{
-                current_chain += 1;
-            }
-        }
-        if row < self.max_rows-2{
-            if self.cols[col][row+2].owner == player{
-                current_chain += 1;
-            }
-        }
-        if row > 2 {
-            if self.cols[col][row-3].owner == player{
-                current_chain += 1;
-            }
-        }
-        if row < self.max_rows-3{
-            if self.cols[col][row+3].owner == player{
-                current_chain += 1;
+                if row < self.max_rows-2{
+                    if self.cols[col][row+2].owner == player{
+                        current_chain += 1;
+                        if row < self.max_rows-3{
+                            if self.cols[col][row+3].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         return current_chain > 3;
@@ -195,31 +195,31 @@ impl BoardState {
         if col < self.max_cols-1 && row < self.max_rows-1{
             if self.cols[col+1][row+1].owner == player{
                 current_chain += 1;
+                if col < self.max_cols-2 && row < self.max_rows-2 {
+                    if self.cols[col+2][row+2].owner == player{
+                        current_chain += 1;
+                        if col < self.max_cols-3 && row < self.max_rows-3 {
+                            if self.cols[col+3][row+3].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         if col > 0 && row > 0{
             if self.cols[col-1][row-1].owner == player{
                 current_chain += 1;
-            }
-        }
-        if col < self.max_cols-2 && row < self.max_rows-2 {
-            if self.cols[col+2][row+2].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col > 1 && row > 1 {
-            if self.cols[col-2][row-2].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col < self.max_cols-3 && row < self.max_rows-3 {
-            if self.cols[col+3][row+3].owner == player{
-                current_chain += 1;
-            }
-        }
-        if col > 2 && row > 2 {
-            if self.cols[col-3][row-3].owner == player{
-                current_chain += 1;
+                if col > 1 && row > 1 {
+                    if self.cols[col-2][row-2].owner == player{
+                        current_chain += 1;
+                        if col > 2 && row > 2 {
+                            if self.cols[col-3][row-3].owner == player{
+                                current_chain += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
         return current_chain > 3;
