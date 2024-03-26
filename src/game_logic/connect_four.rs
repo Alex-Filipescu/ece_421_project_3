@@ -1,49 +1,24 @@
 use std::fmt;
-use crate::game_logic::connect_four::Player::PlayerOne;
+use crate::game_logic::game_info::{GameState, Message, TwoPlayer};
+use crate::game_logic::game_info::Player;
 
 #[derive (Clone)]
 pub struct GridLocation{
     owner: Player,
     row: usize,
     col: usize,
-    traversed:bool,
-}
-
-#[derive(Debug)]
-pub enum Message {
-    Winner(Player),
-    ColumnFull,
-    NextPlayer(Player),
-    OutOfBounds
 }
 
 pub struct BoardState {
-    cols: Vec<Vec<GridLocation>>,
-    max_cols: usize,
-    max_rows: usize
+    pub cols: Vec<Vec<GridLocation>>,
+    pub max_cols: usize,
+    pub max_rows: usize
 }
 
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
-enum Player{
-    None,
-    PlayerOne,
-    PlayerTwo
-}
-
-pub struct GameState {
+pub struct ConnectFour {
     board: BoardState,
     next_player: Player,
     winner: Player
-}
-
-impl Player {
-    fn is_player(&self) -> bool{
-        return match &*self {
-            Player::None => {false}
-            PlayerOne => {true}
-            Player::PlayerTwo => {true}
-        }
-    }
 }
 
 impl BoardState {
@@ -52,7 +27,7 @@ impl BoardState {
         for col in 0..cols{
             let mut row_vec = Vec::with_capacity(cols-1);
             for row in 0..rows{
-                row_vec.push(GridLocation{owner:Player::None, traversed: false, row, col})
+                row_vec.push(GridLocation{owner:Player::None, row, col})
             }
             col_vec.push(row_vec);
         }
@@ -227,11 +202,7 @@ impl BoardState {
 
 }
 
-impl GameState {
-    pub fn init(rows: usize, cols: usize) -> Self{
-        GameState{next_player: PlayerOne, board: BoardState::new(rows, cols), winner:Player::None}
-    }
-
+impl ConnectFour {
     pub fn play_move(&mut self, column: usize) -> Message {
         // The GUI should not allow the user to do this, but this is defensive programming
         if column >= self.board.max_cols {
@@ -242,28 +213,37 @@ impl GameState {
         if play_location.is_none(){
             return Message::ColumnFull;
         }
+        // TODO: Set winner so it stops any more moves (make them reset or reset manually?)
         if self.board.check_winner(current_player.clone(), &mut play_location.clone().unwrap()){
             return Message::Winner(current_player.clone())
         }
         return Message::NextPlayer(self.next_player.clone());
 
     }
+}
 
+impl GameState for ConnectFour {
+    fn init(rows: usize, cols: usize) -> Self{
+        ConnectFour {next_player: Player::PlayerOne, board: BoardState::new(rows, cols), winner:Player::None}
+    }
+
+}
+
+impl TwoPlayer for ConnectFour {
     fn get_next_player(&mut self) -> Player {
         match &self.next_player {
             Player::PlayerOne => {
                 self.next_player = Player::PlayerTwo;
                 return Player::PlayerOne},
             Player::PlayerTwo => {
-                self.next_player = PlayerOne;
+                self.next_player = Player::PlayerOne;
                 return Player::PlayerTwo},
             _ => {panic!("Next player is none")}
         }
     }
-
 }
 
-impl fmt::Debug for GameState {
+impl fmt::Debug for ConnectFour {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in (0..self.board.max_rows).rev() {
             for col in 0..self.board.max_cols {
