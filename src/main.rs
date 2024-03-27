@@ -95,6 +95,7 @@ fn main() {
         let bot_move = mcst.select_move();
         result = game.play_move(bot_move.0, bot_move.1);
         println!("{:?}", game);
+        println!("{} {}", bot_move.0, bot_move.1);
 
         if result == Message::Winner(Player::PlayerOne) || result == Message::Winner(Player::PlayerTwo) || result == Message::Tie {
             break;

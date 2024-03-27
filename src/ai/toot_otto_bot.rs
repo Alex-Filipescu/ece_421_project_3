@@ -31,7 +31,7 @@ impl TootOttoBot {
 
         let mut best_move = (self.game.board.max_cols, 'x');
         let mut token = 'x';
-        if best_score_column <= self.game.board.max_cols {
+        if best_score_column < self.game.board.max_cols {
             token = 't';
             best_move = (best_score_column, token);
         } else {
