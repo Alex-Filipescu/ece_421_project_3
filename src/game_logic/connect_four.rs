@@ -9,14 +9,16 @@ pub struct GridLocation{
     col: usize,
 }
 
+#[derive (Clone)]
 pub struct BoardState {
     pub cols: Vec<Vec<GridLocation>>,
     pub max_cols: usize,
     pub max_rows: usize
 }
 
+#[derive (Clone)]
 pub struct ConnectFour {
-    board: BoardState,
+    pub board: BoardState,
     next_player: Player,
     winner: Player
 }
