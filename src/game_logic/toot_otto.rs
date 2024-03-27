@@ -181,6 +181,8 @@ impl BoardState {
     fn check_up_down(&mut self, col: usize, row: usize) -> Vec<char>{
         let mut result = Vec::new();
 
+        result.push(self.cols[col][row].letter.unwrap());
+
         if row > 0{
             if self.cols[col][row-1].letter.is_some(){
                 result.push(self.cols[col][row-1].letter.unwrap());
@@ -196,7 +198,6 @@ impl BoardState {
                 }
             }
         }
-        result.push(self.cols[col][row].letter.unwrap());
 
         if row < self.max_rows-1{
             if self.cols[col][row+1].letter.is_some(){
@@ -254,6 +255,15 @@ impl BoardState {
         return result;
     }
 
+    fn check_available_move(&mut self) -> bool{
+        for col in &self.cols{
+            if col[self.max_rows-1].letter.is_none(){
+                return true;
+            }
+        }
+        false
+    }
+
 }
 
 impl GameState for TootOtto {
@@ -274,7 +284,10 @@ impl TootOtto {
         if self.winner.is_player(){
             return Message::Winner(self.winner);
         }
-        let current_player = &self.cycle_next_player();
+        if !&self.board.check_available_move() {
+            return Message::Tie;
+        }
+        &self.cycle_next_player();
         let mut play_location = &self.board.play_move(column, letter);
         if play_location.is_none(){
             return Message::ColumnFull;
@@ -324,4 +337,150 @@ impl fmt::Debug for TootOtto {
     }
 }
 
-// TODO: Test cases
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_left_right_toot() {
+        let play_vec: Vec<usize> = vec![0, 5, 1, 5, 2, 5, 3];
+        let letter_vec: Vec<char> = vec!['t', 'o', 'o', 't', 'o', 't', 't'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_left_right_otto() {
+        let play_vec: Vec<usize> = vec![0, 5, 1, 5, 2, 5, 3];
+        let letter_vec: Vec<char> = vec!['o', 'o', 't', 't', 't', 't', 'o'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerTwo), result);
+    }
+
+    #[test]
+    fn test_upward_diagonal_toot() {
+        let play_vec: Vec<usize> = vec![0, 1, 1, 2, 2, 5, 2, 3, 3, 5, 3, 5, 3];
+        let letter_vec: Vec<char> = vec!['t', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 't'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_upward_diagonal_otto() {
+        let play_vec: Vec<usize> = vec![0, 1, 1, 2, 2, 5, 2, 3, 3, 5, 3, 5, 3];
+        let letter_vec: Vec<char> = vec!['o', 't', 't', 't', 't', 't', 't', 't', 't', 't', 't', 't', 'o'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerTwo), result);
+    }
+
+    #[test]
+    fn test_downward_diagonal_toot() {
+        let play_vec: Vec<usize> = vec![0, 0, 0, 5, 0, 1, 1, 5, 1, 2, 2, 5, 3];
+        let letter_vec: Vec<char> = vec!['o', 'o', 'o', 'o', 't', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 't' ];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_downward_diagonal_otto() {
+        let play_vec: Vec<usize> = vec![0, 0, 0, 5, 0, 1, 1, 5, 1, 2, 2, 5, 3];
+        let letter_vec: Vec<char> = vec!['t', 't', 't', 't', 'o', 't', 't', 't', 't', 't', 't', 't', 'o' ];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerTwo), result);
+    }
+
+    #[test]
+    fn test_up_down_toot() {
+        let play_vec: Vec<usize> = vec![0, 0, 0, 0];
+        let letter_vec: Vec<char> = vec!['t', 'o', 'o', 't'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_up_down_otto() {
+        let play_vec: Vec<usize> = vec![0, 0, 0, 0];
+        let letter_vec: Vec<char> = vec!['o', 't', 't', 'o'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerTwo), result);
+    }
+
+    #[test]
+    fn test_column_full() {
+        let play_vec: Vec<usize> = vec![0, 0, 0, 0, 0, 0, 0];
+        let letter_vec: Vec<char> = vec!['t', 't', 'o', 't', 'o', 't', 't'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::ColumnFull, result);
+    }
+    //
+    #[test]
+    fn test_out_of_bounds() {
+        let play_vec: Vec<usize> = vec![9];
+        let letter_vec: Vec<char> = vec!['t'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::OutOfBounds, result);
+    }
+
+    #[test]
+    fn test_invalid_character() {
+        let play_vec: Vec<usize> = vec![3];
+        let letter_vec: Vec<char> = vec!['z'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::InvalidCharacter, result);
+    }
+}

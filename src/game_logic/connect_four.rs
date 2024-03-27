@@ -200,6 +200,14 @@ impl BoardState {
         return current_chain > 3;
     }
 
+    fn check_available_move(&mut self) -> bool{
+        for col in &self.cols{
+            if col[self.max_rows-1].owner == Player::None{
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 impl ConnectFour {
@@ -210,6 +218,9 @@ impl ConnectFour {
         }
         if self.winner.is_player(){
             return Message::Winner(self.winner);
+        }
+        if !&self.board.check_available_move() {
+            return Message::Tie;
         }
         let current_player = &self.cycle_next_player();
         let mut play_location = &self.board.play_move(column, current_player.clone());
@@ -262,5 +273,117 @@ impl fmt::Debug for ConnectFour {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-// TODO: Test cases
+    #[test]
+    fn test_left_right() {
+        let play_vec: Vec<usize> = vec![0, 5, 1, 5, 2, 5, 3];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_upward_diagonal() {
+        let play_vec: Vec<usize> = vec![0, 1, 1, 2, 2, 5, 2, 3, 3, 5, 3, 5, 3];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_downward_diagonal() {
+        let play_vec: Vec<usize> = vec![0, 0, 0, 5, 0, 1, 1, 5, 1, 2, 2, 5, 3];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_up_down() {
+        let play_vec: Vec<usize> = vec![0, 1, 0, 1, 0, 1, 0];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_normal_game_p2_win(){
+        let play_vec: Vec<usize> = vec![0, 6, 5, 5, 4, 3, 4, 4, 3, 5, 5, 4, 2, 3, 6, 1, 2, 2];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerTwo), result);
+    }
+
+    #[test]
+    fn test_normal_game_p1_win(){
+        let play_vec: Vec<usize> = vec![2, 6, 3, 6, 6, 5, 2, 5, 5, 0, 1, 1, 4];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    #[test]
+    fn test_tie_game(){
+        // TODO: Input sequence
+        let play_vec: Vec<usize> = vec![0, 0];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        // assert_eq!(Message::Tie, result);
+    }
+
+    #[test]
+    fn test_column_full(){
+        let play_vec: Vec<usize> = vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::ColumnFull, result);
+    }
+
+    #[test]
+    fn test_out_of_bounds(){
+        let play_vec: Vec<usize> = vec![9];
+        let mut game = ConnectFour::init(6, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::OutOfBounds, result);
+    }
+
+}
