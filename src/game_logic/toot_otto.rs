@@ -10,14 +10,16 @@ pub struct GridLocation{
     traversed:bool,
 }
 
+#[derive (Clone)]
 pub struct BoardState {
     pub cols: Vec<Vec<GridLocation>>,
     pub max_cols: usize,
     pub max_rows: usize
 }
 
+#[derive (Clone)]
 pub struct TootOtto {
-    board: BoardState,
+    pub board: BoardState,
     next_player: Player,
     winner: Player
 }
@@ -52,6 +54,7 @@ impl BoardState {
         let mut otto_found = false;
         char_vec = self.check_left_right(location.col, location.row);
         token_string = char_vec.into_iter().collect();
+        // println!("{}", token_string);
 
         if token_string.contains("toot") && token_string.contains("otto"){
             return Message::Tie;
@@ -123,6 +126,7 @@ impl BoardState {
                 }
             }
         }
+        result.reverse();
         result.push(self.cols[col][row].letter.unwrap());
         if col > 0 {
             if self.cols[col-1][row].letter.is_some(){
@@ -158,6 +162,7 @@ impl BoardState {
                 }
             }
         }
+        result.reverse();
         result.push(self.cols[col][row].letter.unwrap());
 
         if col > 0 && row < self.max_rows-1{
@@ -181,8 +186,6 @@ impl BoardState {
     fn check_up_down(&mut self, col: usize, row: usize) -> Vec<char>{
         let mut result = Vec::new();
 
-        result.push(self.cols[col][row].letter.unwrap());
-
         if row > 0{
             if self.cols[col][row-1].letter.is_some(){
                 result.push(self.cols[col][row-1].letter.unwrap());
@@ -198,6 +201,8 @@ impl BoardState {
                 }
             }
         }
+        result.reverse();
+        result.push(self.cols[col][row].letter.unwrap());
 
         if row < self.max_rows-1{
             if self.cols[col][row+1].letter.is_some(){
@@ -235,6 +240,7 @@ impl BoardState {
                 }
             }
         }
+        result.reverse();
         result.push(self.cols[col][row].letter.unwrap());
 
         if col > 0 && row > 0{
@@ -483,4 +489,20 @@ mod tests {
         println!("{:?}", game);
         assert_eq!(Message::InvalidCharacter, result);
     }
+
+    #[test]
+    fn test_normal_game() {
+        let play_vec: Vec<usize> = vec![3, 5, 2, 4, 0, 1];
+        let letter_vec: Vec<char> = vec!['t', 't', 'o', 't', 't', 'o']
+            ;
+        let mut game = TootOtto::init(7, 7);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Winner(Player::PlayerOne), result);
+    }
+
+    // TODO: Add tie test case
 }

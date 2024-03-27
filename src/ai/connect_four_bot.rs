@@ -1,7 +1,6 @@
 use crate::game_logic::connect_four::ConnectFour;
 use crate::game_logic::game_info::Message;
 use crate::game_logic::game_info::Player;
-use crate::game_logic::game_info::TwoPlayer;
 
 use rand::prelude::*;
 
