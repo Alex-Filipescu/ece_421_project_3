@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        ".\\my-react-rust-app\\rust-component\\Cargo.toml"
+    ]
+}

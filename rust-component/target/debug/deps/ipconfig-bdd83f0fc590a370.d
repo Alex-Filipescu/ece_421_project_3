@@ -1,0 +1,10 @@
+C:\Users\Xirui\ECE421\Projects\ece_421_project_3\my-react-rust-app\rust-component\target\debug\deps\libipconfig-bdd83f0fc590a370.rmeta: C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\lib.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\adapter.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\bindings\mod.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\bindings\win64.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\computer.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\error.rs
+
+C:\Users\Xirui\ECE421\Projects\ece_421_project_3\my-react-rust-app\rust-component\target\debug\deps\ipconfig-bdd83f0fc590a370.d: C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\lib.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\adapter.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\bindings\mod.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\bindings\win64.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\computer.rs C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\error.rs
+
+C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\lib.rs:
+C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\adapter.rs:
+C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\bindings\mod.rs:
+C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\bindings\win64.rs:
+C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\computer.rs:
+C:\Users\Xirui\.cargo\registry\src\index.crates.io-6f17d22bba15001f\ipconfig-0.2.2\src\error.rs:
