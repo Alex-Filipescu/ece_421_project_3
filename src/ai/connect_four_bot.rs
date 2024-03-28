@@ -1,6 +1,7 @@
 use crate::game_logic::connect_four::ConnectFour;
 use crate::game_logic::game_info::Message;
 use crate::game_logic::game_info::Player;
+use crate::game_logic::game_info::TwoPlayer;
 
 use rand::prelude::*;
 
@@ -21,52 +22,95 @@ impl ConnectFourBot {
             2) Block opponent if needed
             3) Choose best move by simulation
         */
-        let scores = self.simulate();
-        let best_score_column = scores
-            .iter()
-            .enumerate()
-            .max_by_key(|(_, &value)| value)
-            .map(|(index, _)| index)
-            .unwrap();
-        
-        if self.check_win(Player::PlayerTwo, best_score_column) < self.game.board.max_cols {
-            return self.check_win(Player::PlayerTwo, best_score_column);
+        if self.check_win(Player::PlayerTwo) < self.game.board.max_cols {
+            return self.check_win(Player::PlayerTwo);
         } 
-        else if self.check_win(Player::PlayerOne, best_score_column) < self.game.board.max_cols {
-            return self.check_win(Player::PlayerOne, best_score_column);
+        else if self.check_win(Player::PlayerOne) < self.game.board.max_cols {
+            return self.check_win(Player::PlayerOne);
         }
         else {
-            return best_score_column;
+            return self.check_best_move();
         }
     }
 
-    fn check_win(&mut self, player: Player, bot_move: usize) -> usize {
+    fn check_win(&mut self, simulate_player: Player) -> usize {
         // Iterate every position and check for win condition of player.
         for column in 0..self.game.board.max_cols {
             let mut game_clone = self.game.clone();
 
-            // player 2 makes best move and checks if it leads to player 1 wins
-            if player == Player::PlayerOne {
-                game_clone.play_move(bot_move);
+            // If simulating player 1, switch to player 1 
+            if simulate_player == Player::PlayerOne {
+                game_clone.cycle_next_player();
             }
 
             let result = game_clone.play_move(column);
-            if result == Message::Winner(player) {
+            if result == Message::Winner(simulate_player) {
                 return column;
             }
         }
         // no one will win next turn, return inpossible column
         return self.game.board.max_cols + 1;
     }
+
+    fn check_best_move(&mut self) -> usize {
+        let scores = self.simulate();
+        let mut columns_sorted: Vec<usize> = (0..scores.len()).collect();
+        columns_sorted.sort_by_key(|&i| std::cmp::Reverse(scores[i]));
+        let mut ind = 0;
+
+        let mut best_column = columns_sorted[ind];
+    
+        while !scores.is_empty() {
+            /*
+            captures case where placing the "best move" would give the opponent a win
+            ex. Placing an O at the question mark would help the opponent (X) win
+                |   |   |   |   |   |   |   |
+                |   |   |   |   |   |   |   |
+                |   |   | O |   |   |   |   |
+                |   |   | X | ? |   |   |   |
+                |   | X | X | O |   |   | O |
+                | X | X | X | O |   |   | O |
+            */
+
+            let mut is_bad_move = false;
+    
+            for column in 0..self.game.board.max_cols {
+                let mut game_clone = self.game.clone();
+    
+                game_clone.play_move(best_column);
+    
+                let result = game_clone.play_move(column);
+                if result == Message::Winner(Player::PlayerOne) {
+                    is_bad_move = true;
+                    break;
+                }
+            }
+    
+            if is_bad_move == false {
+                return best_column;
+            } else {
+                ind += 1;
+                best_column = columns_sorted[ind];
+            }
+        }
+        return columns_sorted[0];
+    }
+
+    fn score_game(&self, result: Message) -> i64 {
+        match result {
+            Message::Winner(Player::PlayerOne) => return -2,
+            Message::Winner(Player::PlayerTwo) => return 1, 
+            Message::Tie => return -1,
+            _ => return 0
+        }
+    }
   
     fn simulate(&mut self) -> Vec<i64> {
-        // let mut scores: Vec<i64> = vec![0; self.game.board.max_cols];
-        let mut scores: Vec<i64> = vec![-4, -2, -2, -1, -2, -2, -4];
+        let mut scores: Vec<i64> = vec![0; self.game.board.max_cols];
 
         for _ in 0..self.num_sims {
             for column in 0..self.game.board.max_cols {
-                // dummy message to initialize the variable
-                let mut result: Message = Message::NextPlayer(Player::PlayerTwo);
+                let mut result: Message = Message::NextPlayer(Player::PlayerTwo);  // dummy message to initialize the variable
                 let mut game_clone = self.game.clone();
 
                 // based on Monte Carlo tree search: try a move and then play randomly to completion and repeat for every possible next move
@@ -81,24 +125,13 @@ impl ConnectFourBot {
                 loop {
                     let mut rng = thread_rng();
                     if rng.gen() {
-                        let bot_move: usize = rng.gen_range(0..(self.game.board.max_cols));
-                        result = game_clone.play_move(bot_move);
+                        let rand_col: usize = rng.gen_range(0..(self.game.board.max_cols));
+                        result = game_clone.play_move(rand_col);
                     }
 
-                    match result {
-                        Message::Winner(Player::PlayerOne) => {
-                            scores[column] -= 2;
-                            break;
-                        }
-                        Message::Winner(Player::PlayerTwo) => {
-                            scores[column] += 1;
-                            break;
-                        }
-                        Message::Tie => {
-                            scores[column] -= 1;
-                            break;
-                        }
-                        _ => {}
+                    if self.score_game(result) != 0 {
+                        scores[column] += self.score_game(result);
+                        break;
                     }
                 }
             }
