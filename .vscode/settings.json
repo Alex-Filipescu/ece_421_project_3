@@ -1,5 +1,12 @@
 {
     "rust-analyzer.linkedProjects": [
-        ".\\my-react-rust-app\\rust-component\\Cargo.toml"
-    ]
+        ".\\my-react-rust-app\\rust-component\\Cargo.toml",
+        ".\\rust-component\\Cargo.toml",
+        ".\\rust-component\\Cargo.toml",
+        ".\\rust-component\\Cargo.toml",
+        ".\\rust-component\\Cargo.toml",
+        ".\\rust-component\\Cargo.toml",
+        ".\\rust-component\\Cargo.toml"
+    ],
+    "rust-analyzer.checkOnSave": false
 }

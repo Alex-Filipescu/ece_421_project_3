@@ -1,1 +1,0 @@
-C:\Users\Xirui\ECE421\Projects\ece_421_project_3\my-react-rust-app\rust-component\target\release\rust_component.dll: C:\Users\Xirui\ECE421\Projects\ece_421_project_3\my-react-rust-app\rust-component\src\lib.rs

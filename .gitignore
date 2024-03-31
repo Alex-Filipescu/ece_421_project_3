@@ -5,9 +5,14 @@
 /.pnp
 .pnp.js
 /target
+/back_end/target
+/front_end/target
+/front_end/node_modules
 # testing
 /coverage
-
+!/src/lib.rs
+!/Cargo.toml
+!/Cargo.lock
 # production
 /build
 
