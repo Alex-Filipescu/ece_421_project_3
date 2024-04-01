@@ -10,7 +10,7 @@ function BoardGrid({ cols, rows }) {
 
   const handleUserClick = async(index, newCellValues)=>{
     const columnNumber = index % cols;
-  
+    
     // Find the index of the first empty cell from the bottom of the column
     let emptyCellIndex = null;
     for (let i = rows - 1; i >= 0; i--) {
@@ -31,6 +31,7 @@ function BoardGrid({ cols, rows }) {
         const response = await axios.post("http://localhost:8000/api/getCol", {
           text: columnNumber.toString(),
         });
+
         console.log(response.data);
         setMessage(response.data);  
       } catch (error) {
@@ -77,6 +78,26 @@ function BoardGrid({ cols, rows }) {
 
   const handleCellClick = async (index) => {
     const newCellValues = [...cellValues];
+
+    //check if column is full
+    const columnNumber = index % cols;
+    let isColumnFull = true;
+
+    // Check each row in the column
+    for (let i = rows - 1; i >= 0; i--) {
+      const cellIndex = i * cols + columnNumber;
+      if (!newCellValues[cellIndex]) {
+        // If any cell in the column is empty, the column is not full
+        isColumnFull = false;
+        break;
+      }
+    }
+
+    if (isColumnFull) {
+      setMessage("Column is full");
+      return; // Return without modifying the cell values
+    }
+
     let cellVals = await handleUserClick(index, newCellValues);
     setTimeout(async () => {
       let botCellVals = await handleBotMove(cellVals);
@@ -84,6 +105,7 @@ function BoardGrid({ cols, rows }) {
       setCellValues(newBotCellVals);
     }, 800);
   };
+
   const handleColumnHover = (columnNumber) => {
     setHoveredColumn(columnNumber);
   };

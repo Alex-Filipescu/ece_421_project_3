@@ -71,6 +71,7 @@ fn receive_col_num(message: Json<JsonMessage>)-> String{
     }
     response
 }
+
 pub fn update_difficulty_level(level: usize) {
     let mut difficulty_level = DIFFICULTY_LEVEL.lock().unwrap();
     *difficulty_level = level;
