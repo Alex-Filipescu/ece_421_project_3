@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 import axios from "axios"; // Import axios library
 
-function BoardGrid({ cols, rows }) {
+function Connect4BoardGrid({ cols, rows }) {
   const totalCells = cols * rows;
   const [cellValues, setCellValues] = useState(Array(totalCells).fill(null));
   const [message, setMessage] = useState(""); 
@@ -30,7 +30,8 @@ function BoardGrid({ cols, rows }) {
       try {
         // Send a POST request to the backend API endpoint with the column number
         const response = await axios.post("http://localhost:8000/api/getCol", {
-          text: columnNumber.toString(),
+          col_num: columnNumber.toString(),
+          token: 'X'
         });
         if (response.data == "0" || response.data == "1" || response.data == "2"){
           setGameOver(true);
@@ -50,7 +51,7 @@ function BoardGrid({ cols, rows }) {
     try {
       // Receive bot's move from the backend
       const response = await axios.get("http://localhost:8000/api/botMove");
-      const { bot_move , message } = response.data;
+      const { bot_move , token, message } = response.data;
       const botMoveColumn = Number(bot_move);
      
       // Find the index of the first empty cell from the bottom of the column specified by the bot
@@ -165,4 +166,4 @@ function BoardGrid({ cols, rows }) {
   );
 }
 
-export default BoardGrid;
+export default Connect4BoardGrid;

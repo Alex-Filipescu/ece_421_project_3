@@ -32,13 +32,21 @@ use std::sync::Mutex;
 
 lazy_static! {
     static ref RESULT: Mutex<Message> = Mutex::new(Message::NextPlayer(Player::PlayerOne));
-    static ref GAME: Mutex<ConnectFour> = Mutex::new(ConnectFour::init(6, 7));
+    static ref CONNECT_FOUR: Mutex<ConnectFour> = Mutex::new(ConnectFour::init(6, 7));
+    static ref TOOT_OTTO: Mutex<TootOtto> = Mutex::new(TootOtto::init(4,6));
     static ref DIFFICULTY_LEVEL: Mutex<usize> = Mutex::new(5); // Default difficulty level
+    static ref GAME_CHOICE: Mutex<String> = Mutex::new("".to_string());
 }
 
 #[derive(Serialize, Deserialize)]
 struct JsonMessage {
     text: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct TurnInfo{
+    col_num: String,
+    token: char
 }
 #[derive(Serialize, Deserialize)]
 struct CountData {
@@ -46,15 +54,34 @@ struct CountData {
 }
 
 #[post("/api/getCol", data = "<message>")]
-fn receive_col_num(message: Json<JsonMessage>)-> String{
+fn receive_col_num(message: Json<TurnInfo>)-> String{
     let mut result = RESULT.lock().unwrap();
-    let mut game = GAME.lock().unwrap();
 
-    println!("Received column number: {}", message.text);
-    let column_number = message.text.clone();
+    //TODO:FINISH MATCH STATEMENT, CHECK HOW TO SEND MULTIPLE PARAMETERS THROUGH
+    let mut game_choice = GAME_CHOICE.lock().unwrap();
+    let mut connect4 = true;
+
+    match game_choice.as_str() {
+        "Connect4" => {connect4 = true},
+        "TootOtto" => {connect4 = false},
+        _ => panic!("Invalid game choice"), // Handle any other unexpected value
+    };
+
+    let column_number = message.col_num.clone();
     let ip: usize = column_number.trim().parse().expect("Invalid Input\n");
-    *result = game.play_move(ip);
-    println!("{:?}", game);
+    println!("Received column number: {}", message.col_num);
+
+    if connect4 {
+        let mut game = CONNECT_FOUR.lock().unwrap();
+        *result = game.play_move(ip);
+        println!("{:?}", game);
+    }else {
+        let mut game = TOOT_OTTO.lock().unwrap();
+        let token = message.token.clone();
+        println!("Received token: {}", message.token);
+        *result = game.play_move(ip, token);
+        println!("{:?}", game);
+    }
 
     let mut response = "".to_string();
     match *result {
@@ -69,6 +96,7 @@ fn receive_col_num(message: Json<JsonMessage>)-> String{
         }
         _ => { response = "3".to_string();}
     }
+
     response
 }
 
@@ -77,12 +105,17 @@ pub fn update_difficulty_level(level: usize) {
     *difficulty_level = level;
 }
 
+pub fn update_game_choice(game: String) {
+    let mut game_choice = GAME_CHOICE.lock().unwrap();
+    *game_choice = game;
+}
+
 #[post("/api/setDifficulty", data = "<message>")]
 fn receive_difficulty(message: Json<JsonMessage>){
     println!("received difficulty: {}", message.text);
     let difficulty_level = match message.text.as_str() {
         "easy" => 5,
-        "medium" => 100,
+        "medium" => 500,
         "hard" => 1000,
         _ => {
             println!("Invalid difficulty level");
@@ -95,6 +128,7 @@ fn receive_difficulty(message: Json<JsonMessage>){
 #[post("/api/getGame", data = "<message>")]
 fn receive_game(message: Json<JsonMessage>) {
     println!("Received game name: {}", message.text);
+    update_game_choice(message.text.clone());
 }
 
 #[post("/api/refreshGame")]
@@ -105,10 +139,25 @@ fn refresh_game() {
         *result = Message::NextPlayer(Player::PlayerOne);
     }
 
-    // Reinitialize GAME to its initial state
+    // Reinitialize CONNECT_FOUR to its initial state
     {
-        let mut game = GAME.lock().unwrap();
-        *game = ConnectFour::init(6, 7); // Assuming init is a function that initializes the game
+        let mut game_choice = GAME_CHOICE.lock().unwrap();
+        let mut connect4 = true;
+    
+        match game_choice.as_str() {
+            "Connect4" => {connect4 = true},
+            "TootOtto" => {connect4 = false},
+             _ => {connect4 = true}, // Handle any other unexpected value
+        };
+        if connect4{
+            let mut game = CONNECT_FOUR.lock().unwrap();
+            *game = ConnectFour::init(6, 7); // Assuming init is a function that initializes the game
+        }else{
+            let mut game = TOOT_OTTO.lock().unwrap();
+            *game = TootOtto::init(4,6);
+            println!("refreshed tootOtto");
+        }
+        
     }
        // Reinitialize Difficulty level to default
     {
@@ -120,20 +169,41 @@ fn refresh_game() {
 #[get("/api/botMove")]
 fn bot_move() -> JsonValue {
     let mut result = RESULT.lock().unwrap();
-    let mut game = GAME.lock().unwrap();
     let difficulty_level = *DIFFICULTY_LEVEL.lock().unwrap() as i32; 
 
-    let mut mcst = ConnectFourBot::new(game.clone(), difficulty_level);
-    let bot_move = mcst.select_move();
-    *result = game.play_move(bot_move);
+    let mut game_choice = GAME_CHOICE.lock().unwrap();
+        let mut connect4 = true;
+    
+        let mut response = json!({
+            "bot_move": "",
+            "token": "",
+            "message": ""
+        });
 
-    println!("{:?}", game);
-
-    let bot_move_str = bot_move.to_string();
-    let mut response = json!({
-        "bot_move": bot_move_str,
-        "message": ""
-    });
+        match game_choice.as_str() {
+            "Connect4" => {connect4 = true},
+            "TootOtto" => {connect4 = false},
+            _ => panic!("Invalid game choice"), // Handle any other unexpected value
+        };
+        if connect4{
+            let mut game = CONNECT_FOUR.lock().unwrap();
+            let mut mcst = ConnectFourBot::new(game.clone(), difficulty_level);
+            let bot_move = mcst.select_move();
+            *result = game.play_move(bot_move);
+            let bot_move_str = bot_move.into();
+            response["bot_move"] = bot_move_str;
+            response["token"] = "O".to_string().into();
+            println!("{:?}", game);
+        }else{
+            let mut game = TOOT_OTTO.lock().unwrap();
+            let mut mcst = TootOttoBot::new(game.clone(), difficulty_level);
+            let bot_move = mcst.select_move();
+            *result = game.play_move(bot_move.0, bot_move.1);
+            response["bot_move"] = bot_move.0.into();
+            response["token"] = bot_move.1.to_string().into();
+            println!("{:?}", game);
+        }
+    
 
     match *result {
         Message::Winner(Player::PlayerOne) => {
@@ -191,54 +261,54 @@ fn index() -> io::Result<NamedFile> {
 }
 
 
-fn play_toot_otto(){
-    let mut result = Message::NextPlayer(Player::PlayerOne);
-    let mut game = TootOtto::init(4, 6);
+// fn play_toot_otto(){
+//     let mut result = Message::NextPlayer(Player::PlayerOne);
+//     let mut game = TootOtto::init(4, 6);
 
-    println!("\nYou are X, Bot is O");
-    println!("{:?}", game);
+//     println!("\nYou are X, Bot is O");
+//     println!("{:?}", game);
 
-    loop {
-        println!("| 0 | 1 | 2 | 3 | 4 | 5 |\n");
-        println!("your move: ");
-        let mut ip = String::new();
-        io::stdin().read_line(&mut ip).expect("Failed to read line\n");
-        let args: Vec<&str> = ip.trim().split_whitespace().collect();
-        let col: usize = args[0].trim().parse().expect("Invalid Input\n");
-        let token: char = args[1].trim().parse().expect("Invalid Input\n");
+//     loop {
+//         println!("| 0 | 1 | 2 | 3 | 4 | 5 |\n");
+//         println!("your move: ");
+//         let mut ip = String::new();
+//         io::stdin().read_line(&mut ip).expect("Failed to read line\n");
+//         let args: Vec<&str> = ip.trim().split_whitespace().collect();
+//         let col: usize = args[0].trim().parse().expect("Invalid Input\n");
+//         let token: char = args[1].trim().parse().expect("Invalid Input\n");
 
-        println!("");
+//         println!("");
 
-        result = game.play_move(col as usize, token);
-        println!("{:?}", game);
+//         result = game.play_move(col as usize, token);
+//         println!("{:?}", game);
 
-        if result == Message::Winner(Player::PlayerOne) || result == Message::Winner(Player::PlayerTwo) || result == Message::Tie {
-            break;
-        }
+//         if result == Message::Winner(Player::PlayerOne) || result == Message::Winner(Player::PlayerTwo) || result == Message::Tie {
+//             break;
+//         }
 
-        // hard: 1000, medium: 500, easy: 5
-        let mut mcst = TootOttoBot::new(game.clone(), 500);
-        let bot_move = mcst.select_move();
-        result = game.play_move(bot_move.0, bot_move.1);
-        println!("{:?}", game);
+//         // hard: 1000, medium: 500, easy: 5
+//         let mut mcst = TootOttoBot::new(game.clone(), 500);
+//         let bot_move = mcst.select_move();
+//         result = game.play_move(bot_move.0, bot_move.1);
+//         println!("{:?}", game);
 
-        match result {
-            Message::Winner(Player::PlayerOne) => {
-                println!("👎 BOO: you win");
-                break;
-            }
-            Message::Winner(Player::PlayerTwo) => {
-                println!("🥳 YAY: BOT WINS"); 
-                break;
-            }
-            Message::Tie => {
-                println!("BOO TIE");
-                break;
-            }
-            _ => {}
-        }
-    }
-}
+//         match result {
+//             Message::Winner(Player::PlayerOne) => {
+//                 println!("👎 BOO: you win");
+//                 break;
+//             }
+//             Message::Winner(Player::PlayerTwo) => {
+//                 println!("🥳 YAY: BOT WINS"); 
+//                 break;
+//             }
+//             Message::Tie => {
+//                 println!("BOO TIE");
+//                 break;
+//             }
+//             _ => {}
+//         }
+//     }
+// }
 
 fn rocket() -> rocket::Rocket {
     rocket::ignite()

@@ -1,7 +1,7 @@
 import Header from '../components/Header'
 import { IconButton } from "@mui/material";
 import React, {useEffect, useState} from 'react';
-import BoardGrid from '../components/BoardGrid';
+import Connect4BoardGrid from '../components/Connect4BoardGrid';
 import axios from 'axios';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import MenuItem from '@mui/material/MenuItem';
@@ -19,8 +19,8 @@ function Connect4Page() {
     const sendGameToBackend = async () => {
       try {
         // Send a get request to the backend API endpoint
-        let gameName = "Connect4";
         await axios.post("http://localhost:8000/api/getGame", {text: "Connect4"});
+        await handleRefresh();
       } catch (error) {
         console.error("Error sending game name to the backend:", error);
       }
@@ -29,7 +29,7 @@ function Connect4Page() {
     // Call the function to send the count to the backend
     sendGameToBackend();
   }, []);
-
+   
   const handleRefresh = async() => {
     // Reload the page or perform any other actions to refresh the game
     setBoardKey(boardKey + 1);
@@ -90,7 +90,7 @@ function Connect4Page() {
       <MenuItem onClick={() => handleClose('hard')} style={{ minWidth: '200px' }}>Hard</MenuItem>
 
       </Menu>
-      <BoardGrid key={boardKey} cols={7} rows={6} />
+      <Connect4BoardGrid key={boardKey} cols={7} rows={6} />
       <IconButton onClick={handleRefresh}>
           <RefreshIcon />
         </IconButton>
