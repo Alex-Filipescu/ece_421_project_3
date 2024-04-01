@@ -45,15 +45,19 @@ function Connect4Page() {
   };
 
   const handleClose = async (difficultyLevel) => {
-    setDifficulty(difficultyLevel); // Set the selected difficulty
-    setAnchorEl(null);
-    //Send the selected difficulty to the backend
-    try {
-      await axios.post("http://localhost:8000/api/setDifficulty", { text: difficultyLevel });
-      // Refresh the page
-      handleRefresh();
-    } catch (error) {
-      console.error("Error setting difficulty level:", error);
+    if (difficultyLevel== "easy" || difficultyLevel == "medium" || difficultyLevel== "hard") {
+      setDifficulty(difficultyLevel); // Set the selected difficulty
+      setAnchorEl(null);
+      //Send the selected difficulty to the backend
+      try {
+        await axios.post("http://localhost:8000/api/setDifficulty", { text: difficultyLevel });
+        // Refresh the page
+        handleRefresh();
+      } catch (error) {
+        console.error("Error setting difficulty level:", error);
+      }
+    } else {
+      setAnchorEl(null);
     }
   };
 
@@ -69,7 +73,7 @@ function Connect4Page() {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleMenuClick}
       >
-        Bot Difficulty: {difficulty || 'Select Difficulty'}
+        Bot Difficulty: {difficulty.toString() || 'Select Difficulty'}
       </Button>
 
       <Menu
