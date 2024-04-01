@@ -33,6 +33,7 @@ use std::sync::Mutex;
 lazy_static! {
     static ref RESULT: Mutex<Message> = Mutex::new(Message::NextPlayer(Player::PlayerOne));
     static ref GAME: Mutex<ConnectFour> = Mutex::new(ConnectFour::init(6, 7));
+    static ref DIFFICULTY_LEVEL: Mutex<usize> = Mutex::new(5); // Default difficulty level
 }
 
 #[derive(Serialize, Deserialize)]
@@ -70,20 +71,58 @@ fn receive_col_num(message: Json<JsonMessage>)-> String{
     }
     response
 }
+pub fn update_difficulty_level(level: usize) {
+    let mut difficulty_level = DIFFICULTY_LEVEL.lock().unwrap();
+    *difficulty_level = level;
+}
+
+#[post("/api/setDifficulty", data = "<message>")]
+fn receive_difficulty(message: Json<JsonMessage>){
+    println!("received difficulty: {}", message.text);
+    let difficulty_level = match message.text.as_str() {
+        "easy" => 5,
+        "medium" => 100,
+        "hard" => 1000,
+        _ => {
+            println!("Invalid difficulty level");
+            return; // Handle invalid difficulty level
+        }
+    };
+    update_difficulty_level(difficulty_level);
+}
 
 #[post("/api/getGame", data = "<message>")]
 fn receive_game(message: Json<JsonMessage>) {
     println!("Received game name: {}", message.text);
 }
 
+#[post("/api/refreshGame")]
+fn refresh_game() {
+    // Reinitialize RESULT to its initial state
+    {
+        let mut result = RESULT.lock().unwrap();
+        *result = Message::NextPlayer(Player::PlayerOne);
+    }
 
+    // Reinitialize GAME to its initial state
+    {
+        let mut game = GAME.lock().unwrap();
+        *game = ConnectFour::init(6, 7); // Assuming init is a function that initializes the game
+    }
+       // Reinitialize Difficulty level to default
+    {
+        let mut difficulty_level = DIFFICULTY_LEVEL.lock().unwrap();
+        *difficulty_level = 5;
+    }
+}
 
 #[get("/api/botMove")]
 fn bot_move() -> JsonValue {
     let mut result = RESULT.lock().unwrap();
     let mut game = GAME.lock().unwrap();
+    let difficulty_level = *DIFFICULTY_LEVEL.lock().unwrap() as i32; 
 
-    let mut mcst = ConnectFourBot::new(game.clone(), 1000);
+    let mut mcst = ConnectFourBot::new(game.clone(), difficulty_level);
     let bot_move = mcst.select_move();
     *result = game.play_move(bot_move);
 
@@ -202,7 +241,7 @@ fn play_toot_otto(){
 
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
-        .mount("/", routes![index, files,receive_game,receive_col_num, bot_move])
+        .mount("/", routes![index, files,receive_game,receive_col_num, bot_move, refresh_game, receive_difficulty])
         .attach(make_cors())
 }
 fn main() {

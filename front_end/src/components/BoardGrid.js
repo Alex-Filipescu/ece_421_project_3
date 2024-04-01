@@ -6,6 +6,7 @@ function BoardGrid({ cols, rows }) {
   const totalCells = cols * rows;
   const [cellValues, setCellValues] = useState(Array(totalCells).fill(null));
   const [message, setMessage] = useState(""); 
+  const [hoveredColumn, setHoveredColumn] = useState(null);
 
   const handleUserClick = async(index, newCellValues)=>{
     const columnNumber = index % cols;
@@ -77,16 +78,29 @@ function BoardGrid({ cols, rows }) {
   const handleCellClick = async (index) => {
     const newCellValues = [...cellValues];
     let cellVals = await handleUserClick(index, newCellValues);
-    console.log(cellVals);
-    let botCellVals = await handleBotMove(cellVals);
-    const newBotCellVals = [...botCellVals];
-    setCellValues(newBotCellVals);
+    setTimeout(async () => {
+      let botCellVals = await handleBotMove(cellVals);
+      const newBotCellVals = [...botCellVals];
+      setCellValues(newBotCellVals);
+    }, 800);
   };
-  
+  const handleColumnHover = (columnNumber) => {
+    setHoveredColumn(columnNumber);
+  };
+
+  const handleColumnHoverLeave = () => {
+    setHoveredColumn(null);
+  };
+
+  const isCellHovered = (index) => {
+    const columnNumber = index % cols;
+    return columnNumber === hoveredColumn;
+  };
 
   return (
+    <div>
     <Box display="flex" justifyContent="center">
-      <Grid container spacing={0.5} style={{ maxWidth: "25%" }}>
+      <Grid container spacing={0.5} style={{ maxWidth: "50%" }}>
         {[...Array(totalCells)].map((_, index) => (
           <Grid
             key={index}
@@ -95,23 +109,30 @@ function BoardGrid({ cols, rows }) {
             style={{ paddingBottom: "0", height: "auto" }}
           >
             <Paper
-              onClick={() => handleCellClick(index)} // Add onClick handler to the Paper component
-              style={{
-                paddingTop: "60%", //for square
-                textAlign: "center",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                border: "1px solid black",
-              }}
-            >
-              {cellValues[index]} {/* Display value of the cell */}
+                id={`cell-${index}`}
+                onClick={() => handleCellClick(index)}
+                onMouseEnter={() => handleColumnHover(index % cols)}
+                onMouseLeave={handleColumnHoverLeave}
+                style={{
+                  padding: "25%",
+                  textAlign: "center",
+                  fontSize: "24px", // Set font size to 24px
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  border: "1px solid black",
+                  transition: "background-color 0.3s",
+                  backgroundColor: isCellHovered(index) ? "#D2EEFC " : "white",
+                }}
+              >
+              {cellValues[index] || "\u00A0"} {/* Display value of the cell */}
             </Paper>
           </Grid>
         ))}
       </Grid>
-      <h2>Result {message}</h2>
     </Box>
+    <h3>Result: {message}</h3>
+    </div>
   );
 }
 
