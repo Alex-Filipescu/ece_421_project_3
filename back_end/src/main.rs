@@ -59,15 +59,15 @@ fn receive_col_num(message: Json<JsonMessage>)-> String{
     let mut response = "".to_string();
     match *result {
         Message::Winner(Player::PlayerOne) => {
-            response = "👎 BOO: you win".to_string()
+            response = "1".to_string();
         }
         Message::Winner(Player::PlayerTwo) => {
-            response = "🥳 YAY: BOT WINS".to_string();
+            response = "2".to_string();
         }
         Message::Tie => {
-            response = "BOO TIE".to_string();
+            response = "0".to_string();
         }
-        _ => { response = "made a move".to_string()}
+        _ => { response = "3".to_string();}
     }
     response
 }
@@ -137,15 +137,15 @@ fn bot_move() -> JsonValue {
 
     match *result {
         Message::Winner(Player::PlayerOne) => {
-            response["message"] = "👎 BOO: you win".into();
+            response["message"] = "1".into();
         }
         Message::Winner(Player::PlayerTwo) => {
-            response["message"] = "🥳 YAY: BOT WINS".into();
+            response["message"] = "2".into();
         }
         Message::Tie => {
-            response["message"] = "BOO TIE".into();
+            response["message"] = "0".into();
         }
-        _ => {response["message"] = "bot made a move".into();}
+        _ => {response["message"] = "3".into();}
     }
     response
 }

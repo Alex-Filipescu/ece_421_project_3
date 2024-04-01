@@ -7,6 +7,7 @@ function BoardGrid({ cols, rows }) {
   const [cellValues, setCellValues] = useState(Array(totalCells).fill(null));
   const [message, setMessage] = useState(""); 
   const [hoveredColumn, setHoveredColumn] = useState(null);
+  const [gameOver, setGameOver] = useState(false); // State to track game over
 
   const handleUserClick = async(index, newCellValues)=>{
     const columnNumber = index % cols;
@@ -31,8 +32,9 @@ function BoardGrid({ cols, rows }) {
         const response = await axios.post("http://localhost:8000/api/getCol", {
           text: columnNumber.toString(),
         });
-
-        console.log(response.data);
+        if (response.data == "0" || response.data == "1" || response.data == "2"){
+          setGameOver(true);
+        }
         setMessage(response.data);  
       } catch (error) {
         console.error("Error handling user click:", error);
@@ -65,6 +67,9 @@ function BoardGrid({ cols, rows }) {
         newCellValues[emptyCellIndex] = "O"; // Set the value of the empty cell to 'O' for bot's move
         // Update the state with the modified cell values after the bot's move
         setCellValues(newCellValues);
+        if (message == "0" || message == "1" || message == "2"){
+          setGameOver(true);
+        }
         setMessage(message);
 
       } else {
@@ -77,6 +82,8 @@ function BoardGrid({ cols, rows }) {
   }
 
   const handleCellClick = async (index) => {
+    if (gameOver) return;
+
     const newCellValues = [...cellValues];
 
     //check if column is full
