@@ -186,6 +186,8 @@ fn bot_move() -> JsonValue {
             let mut mcst = ConnectFourBot::new(game.clone(), difficulty_level);
             let bot_move = mcst.select_move();
             *result = game.play_move(bot_move);
+            println!("bot_move: {:?}", bot_move);
+
             let bot_move_str = bot_move.into();
             response["bot_move"] = bot_move_str;
             response["token"] = "O".to_string().into();
@@ -194,7 +196,7 @@ fn bot_move() -> JsonValue {
             let mut game = TOOT_OTTO.lock().unwrap();
             let mut mcst = TootOttoBot::new(game.clone(), difficulty_level);
             let bot_move = mcst.select_move();
-            println!("bot_move: {}", bot_move);
+            println!("bot_move: {:?}", bot_move);
             *result = game.play_move(bot_move.0, bot_move.1);
             response["bot_move"] = bot_move.0.into();
             response["token"] = bot_move.1.to_string().into();
