@@ -57,10 +57,10 @@ impl ConnectFourBot {
         let mut columns_sorted: Vec<usize> = (0..scores.len()).collect();
         columns_sorted.sort_by_key(|&i| std::cmp::Reverse(scores[i]));
         let mut ind = 0;
-
-        let mut best_column = columns_sorted[ind];
     
-        while !scores.is_empty() {
+        while ind < columns_sorted.len() {
+            let best_column = columns_sorted[ind];
+            
             /*
             captures case where placing the "best move" would give the opponent a win
             ex. Placing an O at the question mark would help the opponent (X) win
@@ -80,7 +80,7 @@ impl ConnectFourBot {
                 game_clone.play_move(best_column);
     
                 let result = game_clone.play_move(column);
-                if result == Message::Winner(Player::PlayerOne) {
+                if result == Message::Winner(Player::PlayerOne) || result == Message::Tie || result == Message::ColumnFull {
                     is_bad_move = true;
                     break;
                 }
@@ -90,7 +90,6 @@ impl ConnectFourBot {
                 return best_column;
             } else {
                 ind += 1;
-                best_column = columns_sorted[ind];
             }
         }
         return columns_sorted[0];

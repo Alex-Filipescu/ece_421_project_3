@@ -69,10 +69,10 @@ impl TootOttoBot {
         let mut columns_sorted: Vec<usize> = (0..scores.len()).collect();
         columns_sorted.sort_by_key(|&i| std::cmp::Reverse(scores[i]));
         let mut ind = 0;
-
-        let mut best_column = columns_sorted[ind];
     
-        while !scores.is_empty() {
+        while ind < columns_sorted.len() {
+            let best_column = columns_sorted[ind];
+
             // captures case where placing the "best move" would give the opponent a win
             let mut is_bad_move = false;
     
@@ -92,7 +92,6 @@ impl TootOttoBot {
                 return (scores[ind], best_column);
             } else {
                 ind += 1;
-                best_column = columns_sorted[ind];
             }
         }
         return (scores[0], columns_sorted[0]);
