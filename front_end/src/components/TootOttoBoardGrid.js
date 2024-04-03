@@ -4,13 +4,14 @@ import axios from "axios"; // Import axios library
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-function TootOttoBoardGrid({ cols, rows }) {
+function TootOttoBoardGrid({ cols, rows, disabled }) {
   const totalCells = cols * rows;
   const [cellValues, setCellValues] = useState(Array(totalCells).fill(null));
   const [message, setMessage] = useState("");
   const [hoveredColumn, setHoveredColumn] = useState(null);
   const [gameOver, setGameOver] = useState(false); // State to track game over
   const [token, setToken] = React.useState("t");
+  const [waiting, setWaiting] = useState(false); // State to track waiting state
 
   const handleUserClick = async (index, newCellValues) => {
     const columnNumber = index % cols;
@@ -89,6 +90,12 @@ function TootOttoBoardGrid({ cols, rows }) {
   
 
   const handleCellClick = async (index) => {
+    if (disabled || waiting) {
+        return;
+      }
+  
+      setWaiting(true);
+  
     if (gameOver) return;
 
     const newCellValues = [...cellValues];
@@ -108,16 +115,21 @@ function TootOttoBoardGrid({ cols, rows }) {
     }
 
     if (isColumnFull) {
-      setMessage("Column is full");
-      return; // Return without modifying the cell values
-    }
+        setMessage("Column is full");
+        setWaiting(false); // Reset waiting state
+        return; // Return without modifying the cell values
+      }
 
     let cellVals = await handleUserClick(index, newCellValues);
+
+    if (gameOver) return;
+
     setTimeout(async () => {
       let botCellVals = await handleBotMove(cellVals);
       const newBotCellVals = [...botCellVals];
       setCellValues(newBotCellVals);
-    }, 800);
+      setWaiting(false); // Reset waiting state
+    }, 500);
   };
 
   const handleToken = (event, newToken) => {

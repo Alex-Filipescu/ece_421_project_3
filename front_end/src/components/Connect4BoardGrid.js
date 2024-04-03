@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 import axios from "axios"; // Import axios library
 
-function Connect4BoardGrid({ cols, rows }) {
+function Connect4BoardGrid({ cols, rows, disabled }) {
   const totalCells = cols * rows;
   const [cellValues, setCellValues] = useState(Array(totalCells).fill(null));
   const [message, setMessage] = useState(""); 
   const [hoveredColumn, setHoveredColumn] = useState(null);
   const [gameOver, setGameOver] = useState(false); // State to track game over
+  const [waiting, setWaiting] = useState(false); // State to track waiting state
 
   const handleUserClick = async(index, newCellValues)=>{
     const columnNumber = index % cols;
@@ -83,8 +84,13 @@ function Connect4BoardGrid({ cols, rows }) {
   }
 
   const handleCellClick = async (index) => {
-    if (gameOver) return;
+    if (disabled || waiting) {
+      return;
+    }
 
+    setWaiting(true);
+
+    if (gameOver) return;
     const newCellValues = [...cellValues];
 
     //check if column is full
@@ -103,15 +109,20 @@ function Connect4BoardGrid({ cols, rows }) {
 
     if (isColumnFull) {
       setMessage("Column is full");
+      setWaiting(false); // Reset waiting state
       return; // Return without modifying the cell values
     }
 
     let cellVals = await handleUserClick(index, newCellValues);
+
+    if (gameOver) return;
+
     setTimeout(async () => {
       let botCellVals = await handleBotMove(cellVals);
       const newBotCellVals = [...botCellVals];
       setCellValues(newBotCellVals);
-    }, 800);
+      setWaiting(false); // Reset waiting state
+    }, 500);
   };
 
   const handleColumnHover = (columnNumber) => {

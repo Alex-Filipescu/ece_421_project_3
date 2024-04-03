@@ -11,8 +11,9 @@ import Menu from '@mui/material/Menu';
 function TootOttoPage() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const [difficulty, setDifficulty] = React.useState('easy'); // State to store the selected difficulty
+  const [difficulty, setDifficulty] = React.useState('select'); // State to store the selected difficulty
   const [boardKey, setBoardKey] = useState(0); // Key for re-rendering the BoardGrid
+  const [gridDisabled, setGridDisabled] = useState(true); // State to track if the grid is disabled
 
   useEffect(() => {
     const sendGameChoice = async () => {
@@ -46,7 +47,7 @@ function TootOttoPage() {
   };
 
   const handleClose = async (difficultyLevel) => {
-    if (difficultyLevel== "easy" || difficultyLevel == "medium" || difficultyLevel== "hard") {
+    if (difficultyLevel === "easy" || difficultyLevel === "medium" || difficultyLevel === "hard") {
       setDifficulty(difficultyLevel); // Set the selected difficulty
       setAnchorEl(null);
       //Send the selected difficulty to the backend
@@ -54,11 +55,15 @@ function TootOttoPage() {
         await axios.post("http://localhost:8000/api/setDifficulty", { text: difficultyLevel });
         // Refresh the page
         handleRefresh();
+        // Enable the grid
+        setGridDisabled(false);
       } catch (error) {
         console.error("Error setting difficulty level:", error);
       }
     } else {
       setAnchorEl(null);
+      // Disable the grid if the difficulty level is invalid
+      setGridDisabled(true);
     }
   };
 
@@ -74,7 +79,7 @@ function TootOttoPage() {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleMenuClick}
       >
-        Bot Difficulty: {difficulty.toString() || 'Select Difficulty'}
+          Bot Difficulty: {difficulty.toString() || 'Select'}
       </Button>
 
       <Menu
@@ -91,7 +96,7 @@ function TootOttoPage() {
       <MenuItem onClick={() => handleClose('hard')} style={{ minWidth: '200px' }}>Hard</MenuItem>
 
       </Menu>
-      <TootOttoBoardGrid key={boardKey} cols={6} rows={4} />
+      <TootOttoBoardGrid key={boardKey} cols={6} rows={4}  disabled={gridDisabled}/>
       <IconButton onClick={handleRefresh}>
           <RefreshIcon />
         </IconButton>

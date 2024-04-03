@@ -159,18 +159,14 @@ fn refresh_game() {
         }
         
     }
-       // Reinitialize Difficulty level to default
-    {
-        let mut difficulty_level = DIFFICULTY_LEVEL.lock().unwrap();
-        *difficulty_level = 5;
-    }
+
 }
 
 #[get("/api/botMove")]
 fn bot_move() -> JsonValue {
     let mut result = RESULT.lock().unwrap();
     let difficulty_level = *DIFFICULTY_LEVEL.lock().unwrap() as i32; 
-
+    println!("difficulty level: {}",difficulty_level);
     let mut game_choice = GAME_CHOICE.lock().unwrap();
         let mut connect4 = true;
     
@@ -198,6 +194,7 @@ fn bot_move() -> JsonValue {
             let mut game = TOOT_OTTO.lock().unwrap();
             let mut mcst = TootOttoBot::new(game.clone(), difficulty_level);
             let bot_move = mcst.select_move();
+            println!("bot_move: {}", bot_move);
             *result = game.play_move(bot_move.0, bot_move.1);
             response["bot_move"] = bot_move.0.into();
             response["token"] = bot_move.1.to_string().into();
