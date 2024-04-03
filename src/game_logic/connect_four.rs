@@ -1,5 +1,4 @@
-use std::fmt;
-use crate::game_logic::game_info::{GameState, Message, TwoPlayer};
+use crate::game_logic::game_info::Message;
 use crate::game_logic::game_info::Player;
 
 #[derive (Clone, Debug)]
@@ -253,18 +252,17 @@ impl ConnectFour {
         }
     }
 
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    pub fn print_board(&self) {
         for row in (0..self.board.max_rows).rev() {
             for col in 0..self.board.max_cols {
                 match self.board.cols[col][row].owner {
-                    Player::PlayerOne => write!(f, "| X ")?,
-                    Player::PlayerTwo => write!(f, "| O ")?,
-                    Player::None => write!(f, "|   ")?,
+                    Player::PlayerOne => print!("| X "),
+                    Player::PlayerTwo => print!("| O "),
+                    Player::None => print!("|   "),
                 }
             }
-            writeln!(f, "|")?;
+            println!("|");
         }
-        Ok(())
     }
 }
 
@@ -280,7 +278,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -292,7 +290,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -304,7 +302,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -316,7 +314,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -328,7 +326,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerTwo), result);
     }
 
@@ -340,21 +338,8 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
-    }
-
-    #[test]
-    fn test_tie_game(){
-        // TODO: Input sequence
-        let play_vec: Vec<usize> = vec![0, 0];
-        let mut game = ConnectFour::init(6, 7);
-        let mut result = Message::NextPlayer(Player::PlayerOne);
-        for i in 0..play_vec.len() {
-            result = game.play_move(play_vec[i]);
-        }
-        println!("{:?}", game);
-        // assert_eq!(Message::Tie, result);
     }
 
     #[test]
@@ -365,7 +350,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::ColumnFull, result);
     }
 
@@ -377,7 +362,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::OutOfBounds, result);
     }
 

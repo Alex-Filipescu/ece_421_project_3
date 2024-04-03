@@ -1,5 +1,4 @@
-use std::fmt;
-use crate::game_logic::game_info::{GameState, Message, TwoPlayer};
+use crate::game_logic::game_info::Message;
 use crate::game_logic::game_info::Player;
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -319,18 +318,17 @@ impl TootOtto {
             _ => {panic!("Player is none")}
         }
     }
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    pub fn print_board(&self) {
         for row in (0..self.board.max_rows).rev() {
             for col in 0..self.board.max_cols {
                 match self.board.cols[col][row].letter {
-                    Some('t') => write!(f, "| t ")?,
-                    Some('o') => write!(f, "| o ")?,
-                    _ => write!(f, "|   ")?,
+                    Some('t') => print!("| t "),
+                    Some('o') => print!("| o "),
+                    _ => print!("|   "),
                 }
             }
-            writeln!(f, "|")?;
+            println!("|");
         }
-        Ok(())
     }
 }
 
@@ -348,7 +346,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -361,7 +359,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerTwo), result);
     }
 
@@ -374,7 +372,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -387,7 +385,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerTwo), result);
     }
 
@@ -400,7 +398,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -413,7 +411,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerTwo), result);
     }
 
@@ -426,7 +424,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
@@ -439,7 +437,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerTwo), result);
     }
 
@@ -452,7 +450,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::ColumnFull, result);
     }
     #[test]
@@ -464,7 +462,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::OutOfBounds, result);
     }
 
@@ -477,7 +475,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::InvalidCharacter, result);
     }
 
@@ -490,7 +488,7 @@ mod tests {
         for i in 0..play_vec.len() {
             result = game.play_move(play_vec[i], letter_vec[i]);
         }
-        println!("{:?}", game);
+        game.print_board();
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
