@@ -2,19 +2,21 @@ use std::fmt;
 use crate::game_logic::game_info::{GameState, Message, TwoPlayer};
 use crate::game_logic::game_info::Player;
 
-#[derive (Clone)]
+#[derive (Clone, Debug)]
 pub struct GridLocation{
     owner: Player,
     row: usize,
     col: usize,
 }
 
+#[derive(Debug)]
 pub struct BoardState {
     pub cols: Vec<Vec<GridLocation>>,
     pub max_cols: usize,
     pub max_rows: usize
 }
 
+#[derive(Debug)]
 pub struct ConnectFour {
     board: BoardState,
     next_player: Player,
@@ -211,6 +213,10 @@ impl BoardState {
 }
 
 impl ConnectFour {
+    pub fn init(rows: usize, cols: usize) -> Self{
+        ConnectFour {next_player: Player::PlayerOne, board: BoardState::new(rows, cols), winner:Player::None}
+    }
+
     pub fn play_move(&mut self, column: usize) -> Message {
         // The GUI should not allow the user to do these, but this is defensive programming
         if column >= self.board.max_cols {
@@ -234,16 +240,7 @@ impl ConnectFour {
         return Message::NextPlayer(self.next_player.clone());
 
     }
-}
 
-impl GameState for ConnectFour {
-    fn init(rows: usize, cols: usize) -> Self{
-        ConnectFour {next_player: Player::PlayerOne, board: BoardState::new(rows, cols), winner:Player::None}
-    }
-
-}
-
-impl TwoPlayer for ConnectFour {
     fn cycle_next_player(&mut self) -> Player {
         match &self.next_player {
             Player::PlayerOne => {
@@ -255,9 +252,7 @@ impl TwoPlayer for ConnectFour {
             _ => {panic!("Player is none")}
         }
     }
-}
 
-impl fmt::Debug for ConnectFour {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in (0..self.board.max_rows).rev() {
             for col in 0..self.board.max_cols {

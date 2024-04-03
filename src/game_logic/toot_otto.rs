@@ -10,12 +10,14 @@ pub struct GridLocation{
     traversed:bool,
 }
 
+#[derive(Debug)]
 pub struct BoardState {
     pub cols: Vec<Vec<GridLocation>>,
     pub max_cols: usize,
     pub max_rows: usize
 }
 
+#[derive(Debug)]
 pub struct TootOtto {
     board: BoardState,
     next_player: Player,
@@ -270,13 +272,10 @@ impl BoardState {
 
 }
 
-impl GameState for TootOtto {
-    fn init(rows: usize, cols: usize) -> Self {
+impl TootOtto {
+    pub fn init(rows: usize, cols: usize) -> Self {
         TootOtto {next_player: Player::PlayerOne, board: BoardState::new(rows, cols), winner: Player::None}
     }
-}
-
-impl TootOtto {
     pub fn play_move(&mut self, column: usize, letter: char) -> Message {
         // The GUI should not allow the user to do these, but this is defensive programming
         if letter != 't' && letter != 'o' {
@@ -309,9 +308,6 @@ impl TootOtto {
         }
 
     }
-}
-
-impl TwoPlayer for TootOtto {
     fn cycle_next_player(&mut self) -> Player {
         match &self.next_player {
             Player::PlayerOne => {
@@ -323,9 +319,6 @@ impl TwoPlayer for TootOtto {
             _ => {panic!("Player is none")}
         }
     }
-}
-
-impl fmt::Debug for TootOtto {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in (0..self.board.max_rows).rev() {
             for col in 0..self.board.max_cols {
@@ -340,6 +333,7 @@ impl fmt::Debug for TootOtto {
         Ok(())
     }
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -461,7 +455,6 @@ mod tests {
         println!("{:?}", game);
         assert_eq!(Message::ColumnFull, result);
     }
-    //
     #[test]
     fn test_out_of_bounds() {
         let play_vec: Vec<usize> = vec![9];
@@ -491,8 +484,7 @@ mod tests {
     #[test]
     fn test_normal_game() {
         let play_vec: Vec<usize> = vec![3, 5, 2, 4, 0, 1];
-        let letter_vec: Vec<char> = vec!['t', 't', 'o', 't', 't', 'o']
-            ;
+        let letter_vec: Vec<char> = vec!['t', 't', 'o', 't', 't', 'o'];
         let mut game = TootOtto::init(7, 7);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -502,5 +494,4 @@ mod tests {
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
 
-    // TODO: Add tie test case
 }
