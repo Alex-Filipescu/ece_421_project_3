@@ -8,11 +8,20 @@ use rand::prelude::*;
 pub struct TootOttoBot {
     game: TootOtto,
     num_sims: i32,
+    player: Player,
 }
 
 impl TootOttoBot {
-    pub fn new(game: TootOtto, num_sims: i32) -> Self {
-        return TootOttoBot{ game, num_sims };
+    pub fn new(game: TootOtto, num_sims: i32, player: Player) -> Self {
+        return TootOttoBot{ game, num_sims, player };
+    }
+
+    fn get_opponent(&self) -> Player {
+        match self.player {
+            Player::PlayerOne => return Player::PlayerTwo,
+            Player::PlayerTwo => return Player::PlayerOne,
+            _ => panic!("PLAYER UNDEFINED SHOULD NEVER HAPPEN!!!")
+        }
     }
 
     pub fn select_move(&mut self) -> (usize, char) {
@@ -24,8 +33,8 @@ impl TootOttoBot {
         */
 
         for letter in ['t', 'o'] {
-            let p2 = self.check_win(Player::PlayerTwo, letter);
-            let p1 = self.check_win(Player::PlayerOne, letter);
+            let p2 = self.check_win(self.player, letter);
+            let p1 = self.check_win(self.get_opponent(), letter);
 
             if p2.0 < self.game.board.max_cols {
                 return p2;
@@ -50,8 +59,8 @@ impl TootOttoBot {
         for column in 0..self.game.board.max_cols {
             let mut game_clone = self.game.clone();
 
-            // If simulating player 1, switch to player 1 
-            if simulate_player == Player::PlayerOne {
+            // If simulating opponent, switch
+            if simulate_player == self.get_opponent() {
                 game_clone.cycle_next_player();
             }
 
@@ -82,7 +91,7 @@ impl TootOttoBot {
                 game_clone.play_move(best_column, letter);
     
                 let result = game_clone.play_move(column, letter);
-                if result == Message::Winner(Player::PlayerOne) {
+                if result == Message::Winner(self.get_opponent()) || result == Message::Tie || result == Message::ColumnFull {
                     is_bad_move = true;
                     break;
                 }
@@ -99,10 +108,10 @@ impl TootOttoBot {
 
     fn score_game(&self, result: Message) -> i64 {
         match result {
-            Message::Winner(Player::PlayerOne) => return -2,
-            Message::Winner(Player::PlayerTwo) => return 1, 
-            Message::Tie => return -1,
-            _ => return 0
+            Message::Winner(player) if player == self.get_opponent() => -2,
+            Message::Winner(player) if player == self.player => 1, 
+            Message::Tie => -1,
+            _ => 0
         }
     }
   
@@ -112,7 +121,7 @@ impl TootOttoBot {
         for _ in 0..self.num_sims {
             for column in 0..self.game.board.max_cols {
                 // dummy message to initialize the variable
-                let mut result: Message = Message::NextPlayer(Player::PlayerTwo);
+                let mut result: Message = Message::NextPlayer(self.player);
                 let mut game_clone = self.game.clone();
 
                 // based on Monte Carlo tree search: try a move and then play randomly to completion and repeat for every possible next move

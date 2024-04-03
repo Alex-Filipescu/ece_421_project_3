@@ -8,11 +8,20 @@ use rand::prelude::*;
 pub struct ConnectFourBot {
     game: ConnectFour,
     num_sims: i32,
+    player: Player,
 }
 
 impl ConnectFourBot {
-    pub fn new(game: ConnectFour, num_sims: i32) -> Self {
-        return ConnectFourBot{ game, num_sims };
+    pub fn new(game: ConnectFour, num_sims: i32, player: Player) -> Self {
+        return ConnectFourBot{ game, num_sims, player };
+    }
+
+    fn get_opponent(&self) -> Player {
+        match self.player {
+            Player::PlayerOne => return Player::PlayerTwo,
+            Player::PlayerTwo => return Player::PlayerOne,
+            _ => panic!("PLAYER UNDEFINED SHOULD NEVER HAPPEN!!!")
+        }
     }
 
     pub fn select_move(&mut self) -> usize {
@@ -22,11 +31,11 @@ impl ConnectFourBot {
             2) Block opponent if needed
             3) Choose best move by simulation
         */
-        if self.check_win(Player::PlayerTwo) < self.game.board.max_cols {
-            return self.check_win(Player::PlayerTwo);
+        if self.check_win(self.player) < self.game.board.max_cols {
+            return self.check_win(self.player);
         } 
-        else if self.check_win(Player::PlayerOne) < self.game.board.max_cols {
-            return self.check_win(Player::PlayerOne);
+        else if self.check_win(self.get_opponent()) < self.game.board.max_cols {
+            return self.check_win(self.get_opponent());
         }
         else {
             return self.check_best_move();
@@ -38,8 +47,8 @@ impl ConnectFourBot {
         for column in 0..self.game.board.max_cols {
             let mut game_clone = self.game.clone();
 
-            // If simulating player 1, switch to player 1 
-            if simulate_player == Player::PlayerOne {
+            // If simulating opponent, switch to them
+            if simulate_player == self.get_opponent() {
                 game_clone.cycle_next_player();
             }
 
@@ -60,7 +69,7 @@ impl ConnectFourBot {
     
         while ind < columns_sorted.len() {
             let best_column = columns_sorted[ind];
-            
+
             /*
             captures case where placing the "best move" would give the opponent a win
             ex. Placing an O at the question mark would help the opponent (X) win
@@ -80,7 +89,7 @@ impl ConnectFourBot {
                 game_clone.play_move(best_column);
     
                 let result = game_clone.play_move(column);
-                if result == Message::Winner(Player::PlayerOne) || result == Message::Tie || result == Message::ColumnFull {
+                if result == Message::Winner(self.get_opponent()) || result == Message::Tie || result == Message::ColumnFull {
                     is_bad_move = true;
                     break;
                 }
@@ -97,10 +106,10 @@ impl ConnectFourBot {
 
     fn score_game(&self, result: Message) -> i64 {
         match result {
-            Message::Winner(Player::PlayerOne) => return -2,
-            Message::Winner(Player::PlayerTwo) => return 1, 
-            Message::Tie => return -1,
-            _ => return 0
+            Message::Winner(player) if player == self.get_opponent() => -2,
+            Message::Winner(player) if player == self.player => 1, 
+            Message::Tie => -1,
+            _ => 0
         }
     }
   
@@ -109,7 +118,7 @@ impl ConnectFourBot {
 
         for _ in 0..self.num_sims {
             for column in 0..self.game.board.max_cols {
-                let mut result: Message = Message::NextPlayer(Player::PlayerTwo);  // dummy message to initialize the variable
+                let mut result: Message = Message::NextPlayer(self.player);  // dummy message to initialize the variable
                 let mut game_clone = self.game.clone();
 
                 // based on Monte Carlo tree search: try a move and then play randomly to completion and repeat for every possible next move
