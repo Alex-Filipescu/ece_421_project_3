@@ -1,0 +1,171 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-gap: 5px;
+  width: 400px;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  opacity: 0.7;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.column:hover {
+  background-color: lightblue;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.header-container {
+  color: black;
+  padding: 10px;
+}
+
+.header-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  display: flex;
+  justify-content: center;
+}
+
+.header-item {
+  margin-right: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  color: lightgray;
+}
+
+.cell {
+  text-align: center;
+}
+
+.redButton.horizTranslate2 {
+  -webkit-transition: -webkit-transform 0.1s linear;
+  -webkit-transform: translateX(20px);
+}
+.redButton.horizTranslate3 {
+  -webkit-transition: -webkit-transform 0.1s linear;
+  -webkit-transform: translateX(40px);
+}
+.redButton.horizTranslate1 {
+  -webkit-transition: -webkit-transform 0.1s linear;
+  -webkit-transform: translateX(0px);
+}
+#outerContainer {
+  position: relative;
+  width: 111px;
+  height: 98px;
+}
+#buttonContainer {
+  background-color: #222d41;
+  width: 71px;
+  height: 28px;
+  position: relative;
+  left: 20px;
+  top: 45px;
+  border-radius: 14px;
+}
+.redButton {
+  width: 16px;
+  height: 16px;
+  background-color: #db3d2b;
+  border-radius: 8px;
+  position: relative;
+  top: 6px;
+  left: 6px;
+}
+#legendTextContainer {
+  left: 22px;
+  display: inline-block;
+  position: absolute;
+  top: 23px;
+  color: black; 
+  font-size: 10pt;
+  text-align: center;
+}
+.legendText {
+  display: inline-block;
+  width: 20px;
+  padding-bottom: 33px;
+  color:black;
+  cursor: default;
+  user-select: none;
+}
+#message {
+  border: 1px solid #cccccc;
+  display: inline-block;
+  padding: 4px;
+  margin-top: 6px;
+  font-family: Arial;
+  font-size: 10pt;
+}
