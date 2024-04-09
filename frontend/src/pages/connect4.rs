@@ -1,7 +1,7 @@
 use crate::components::connect4Grid::Connect4Grid;
 use reqwest::Client;
 use serde_json::json;
-
+use crate::components::header::Header;
 use yew::prelude::*;
 
 pub async fn set_game(){

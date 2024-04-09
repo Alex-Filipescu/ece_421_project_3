@@ -16,8 +16,8 @@ pub enum RootRoutes {
 
 pub fn switch(routes: RootRoutes) -> Html {
     match routes {
-        RootRoutes::Home => html! { <Home/> },
-        RootRoutes::Connect4 => html! {<Connect4/>},
-        RootRoutes::TootOtto => html! {<TootOtto/>},
+        RootRoutes::Home => html! { <div class = "page"><Home/></div> },
+        RootRoutes::Connect4 => html! {<div class = "page"><Connect4/></div>},
+        RootRoutes::TootOtto => html! {<div class = "page"><TootOtto/></div>},
     }
 }

@@ -9,6 +9,8 @@ use serde_json::json;
 use reqwest::Client;
 use serde::{Serialize, Deserialize};
 use crate::components::slider::Slider;
+use wasm_bindgen::JsCast;
+use web_sys::{EventTarget, HtmlInputElement};
 
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -188,6 +190,8 @@ pub fn tootOttoGrid()-> Html{
     let hint_col = use_state(|| " ".to_string());
     let hint_tok = use_state(|| " ".to_string());
     let hint_visible = use_state(|| false); // State to control hint visibility
+    let user_color = use_state(|| "#FFFFFF".to_string());
+    let bot_color = use_state(|| "#FFFFFF".to_string());
 
     let onclick_callback = {
         let cell_states = cell_states.clone();
@@ -202,8 +206,8 @@ pub fn tootOttoGrid()-> Html{
             let running = running.clone();
 
             let token = match *token_state {
-                true=>'o',
-                false => 't'
+                true=>'O',
+                false => 'T'
             };
 
             // Check if user_move is currently running
@@ -281,30 +285,86 @@ pub fn tootOttoGrid()-> Html{
         })
     };
 
+    let on_user_color_change = {
+        let user_color = user_color.clone();
+        Callback::from(move |e: Event| {
+            // Clone user_color inside the closure to avoid borrowing issues
+            let user_color = user_color.clone();
+    
+            // When events are created, the target is initially undefined.
+            // It's only when dispatched does the target get added.
+            if let Some(target) = e.target() {
+                // Convert the event target to an HTML input element
+                if let Ok(input) = target.dyn_into::<HtmlInputElement>() {
+                    // Set the color value from the input element
+                    user_color.set(input.value());
+                }
+            }
+        })
+    };
+    
+
+    let on_bot_color_change = {
+        let bot_color = bot_color.clone();
+        Callback::from(move |e: Event| {
+            // When events are created the target is undefined, it's only
+            // when dispatched does the target get added.
+            let target: Option<EventTarget> = e.target();
+            // Events can bubble so this listener might catch events from child
+            // elements which are not of type HtmlInputElement
+            let input = target.and_then(|t| t.dyn_into::<HtmlInputElement>().ok());
+
+            if let Some(input) = input {
+                bot_color.set(input.value());
+            }
+        })
+    };
+
+
     html! {
-        <div>
-        <Slider diff_change = {diff_change.clone()}>
-        </Slider>
+        <div class = "tootOttoGrid">
+            <div class="sliderContainer">
+                <div class="leftSection"></div>
+                <div class="middleSection">
+                    <Slider diff_change={diff_change.clone()}></Slider>
+                </div>
+                <div class="rightSection">
+                </div>
+            </div>
 
-        <span>{'T'}</span>
-            <label class="switch">
-                <input type="checkbox" checked = {*token_state} onchange={toggle_switch.clone()}/>
-                <span class="slider"></span>
-            </label>
-        <span>{'O'}</span>
+            <div class = "gridControls">
+            <div class = "gridLeft"></div>
+            <div class = "gridMiddle">
+                <div class="grid-container">
+                    <div class="grid">
+                        <Col index = 0 on_click={onclick_callback.clone() } cells={cell_states.clone()[0].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                        <Col index = 1 on_click={onclick_callback.clone() } cells={cell_states.clone()[1].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                        <Col index = 2 on_click={onclick_callback.clone() } cells={cell_states.clone()[2].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                        <Col index = 3 on_click={onclick_callback.clone() } cells={cell_states.clone()[3].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                        <Col index = 4 on_click={onclick_callback.clone() } cells={cell_states.clone()[4].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                        <Col index = 5 on_click={onclick_callback.clone() } cells={cell_states.clone()[5].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                    </div>
+                </div>
 
-        <button {onmouseover} {onmouseleave}>{"Hint"}</button>
-        <p style={format!("display: {}", if *hint_visible { "block" } else { "none" })}>{format!("Column: {} Token:{}",*hint_col, *hint_tok)}</p> 
+                <p>{format!("Result: {}", *result_message)}</p>
+                <button {onmouseover} {onmouseleave}>{"Hint"}</button>
+                <p style={format!("display: {}", if *hint_visible { "block" } else { "none" })}>{format!("Column: {} Token:{}",*hint_col, *hint_tok)}</p> 
+            </div>
 
-        <div class="grid">
-            <Col index = 0 on_click={onclick_callback.clone() } cells={cell_states.clone()[0].clone()} cell_num = 4/>
-            <Col index = 1 on_click={onclick_callback.clone() } cells={cell_states.clone()[1].clone()} cell_num = 4/>
-            <Col index = 2 on_click={onclick_callback.clone() } cells={cell_states.clone()[2].clone()} cell_num = 4/>
-            <Col index = 3 on_click={onclick_callback.clone() } cells={cell_states.clone()[3].clone()} cell_num = 4/>
-            <Col index = 4 on_click={onclick_callback.clone() } cells={cell_states.clone()[4].clone()} cell_num = 4/>
-            <Col index = 5 on_click={onclick_callback.clone() } cells={cell_states.clone()[5].clone()} cell_num = 4/>
+            <div class = "gridRight">
+                <button class = "refreshButton" {onclick}>{"Refresh"}</button>
+                <div class="switchContainer">
+                    <div class = "innerSwitch">
+                    <span class="switchText">{'T'}</span>
+                    <label class="switch">
+                        <input type="checkbox" checked={*token_state} onchange={toggle_switch.clone()} />
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switchText">{'O'}</span>
+                    </div>
+                </div>
+                </div>
         </div>
-        <button {onclick}>{"Refresh"}</button>
 
         </div>
     }

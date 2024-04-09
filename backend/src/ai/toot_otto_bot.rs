@@ -32,7 +32,7 @@ impl TootOttoBot {
             3) Choose best move by simulation
         */
 
-        for letter in ['t', 'o'] {
+        for letter in ['T', 'O'] {
             let p2 = self.check_win(self.player, letter);
             let p1 = self.check_win(self.get_opponent(), letter);
 
@@ -40,17 +40,17 @@ impl TootOttoBot {
                 return p2;
             } 
             else if p1.0 < self.game.board.max_cols {
-                let l = if letter=='o' { 't' } else { 'o' };
+                let l = if letter=='O' { 'T' } else { 'O' };
                 return (p1.0, l);
             }
         }
 
-        let t_best = self.check_best_move('t');
-        let o_best = self.check_best_move('o');
+        let t_best = self.check_best_move('T');
+        let o_best = self.check_best_move('O');
         if t_best.0 > o_best.0 {
-            return (t_best.1, 't');
+            return (t_best.1, 'T');
         } else {
-            return (o_best.1, 'o');
+            return (o_best.1, 'O');
         }
     }
 
@@ -137,7 +137,7 @@ impl TootOttoBot {
                     let mut rng = thread_rng();
                     if rng.gen() {
                         let rand_column: usize = rng.gen_range(0..(self.game.board.max_cols));
-                        let rand_letter: char = if rng.gen_range(0..2)==0 {'t'} else { 'o' };
+                        let rand_letter: char = if rng.gen_range(0..2)==0 {'T'} else { 'O' };
                         result = game_clone.play_move(rand_column, rand_letter);
                     }
 

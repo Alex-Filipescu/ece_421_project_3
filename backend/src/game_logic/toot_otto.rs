@@ -56,44 +56,44 @@ impl BoardState {
         token_string = char_vec.into_iter().collect();
         // println!("{}", token_string);
 
-        if token_string.contains("toot") && token_string.contains("otto"){
+        if token_string.contains("TOOT") && token_string.contains("OTTO"){
             return Message::Tie;
-        } else if token_string.contains("toot") {
+        } else if token_string.contains("TOOT") {
             toot_found = true;
-        } else if token_string.contains("otto") {
+        } else if token_string.contains("OTTO") {
             otto_found = true;
         }
 
         char_vec = self.check_downward_diagonal(location.col, location.row);
         token_string = char_vec.into_iter().collect();
 
-        if token_string.contains("toot") && token_string.contains("otto"){
+        if token_string.contains("TOOT") && token_string.contains("OTTO"){
             return Message::Tie;
-        } else if token_string.contains("toot") {
+        } else if token_string.contains("TOOT") {
             toot_found = true;
-        } else if token_string.contains("otto") {
+        } else if token_string.contains("OTTO") {
             otto_found = true;
         }
 
         char_vec = self.check_up_down(location.col, location.row);
         token_string = char_vec.into_iter().collect();
 
-        if token_string.contains("toot") && token_string.contains("otto"){
+        if token_string.contains("TOOT") && token_string.contains("OTTO"){
             return Message::Tie;
-        } else if token_string.contains("toot") {
+        } else if token_string.contains("TOOT") {
             toot_found = true;
-        } else if token_string.contains("otto") {
+        } else if token_string.contains("OTTO") {
             otto_found = true;
         }
 
         char_vec = self.check_upward_diagonal(location.col, location.row);
         token_string = char_vec.into_iter().collect();
 
-        if token_string.contains("toot") && token_string.contains("otto"){
+        if token_string.contains("TOOT") && token_string.contains("OTTO"){
             return Message::Tie;
-        } else if token_string.contains("toot") {
+        } else if token_string.contains("TOOT") {
             toot_found = true;
-        } else if token_string.contains("otto") {
+        } else if token_string.contains("OTTO") {
             otto_found = true;
         }
 
@@ -281,7 +281,7 @@ impl GameState for TootOtto {
 impl TootOtto {
     pub fn play_move(&mut self, column: usize, letter: char) -> Message {
         // The GUI should not allow the user to do these, but this is defensive programming
-        if letter != 't' && letter != 'o' {
+        if letter != 'T' && letter != 'O' {
             return Message::InvalidCharacter;
         }
         if column >= self.board.max_cols {
@@ -332,8 +332,8 @@ impl fmt::Debug for TootOtto {
         for row in (0..self.board.max_rows).rev() {
             for col in 0..self.board.max_cols {
                 match self.board.cols[col][row].letter {
-                    Some('t') => write!(f, "| t ")?,
-                    Some('o') => write!(f, "| o ")?,
+                    Some('T') => write!(f, "| T ")?,
+                    Some('O') => write!(f, "| O ")?,
                     _ => write!(f, "|   ")?,
                 }
             }
@@ -350,7 +350,7 @@ mod tests {
     #[test]
     fn test_left_right_toot() {
         let play_vec: Vec<usize> = vec![0, 5, 1, 5, 2, 5, 3];
-        let letter_vec: Vec<char> = vec!['t', 'o', 'o', 't', 'o', 't', 't'];
+        let letter_vec: Vec<char> = vec!['T', 'O', 'O', 'T', 'O', 'T', 'T'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -363,7 +363,7 @@ mod tests {
     #[test]
     fn test_left_right_otto() {
         let play_vec: Vec<usize> = vec![0, 5, 1, 5, 2, 5, 3];
-        let letter_vec: Vec<char> = vec!['o', 'o', 't', 't', 't', 't', 'o'];
+        let letter_vec: Vec<char> = vec!['O', 'O', 'T', 'T', 'T', 'T', 'O'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -376,7 +376,7 @@ mod tests {
     #[test]
     fn test_upward_diagonal_toot() {
         let play_vec: Vec<usize> = vec![0, 1, 1, 2, 2, 5, 2, 3, 3, 5, 3, 5, 3];
-        let letter_vec: Vec<char> = vec!['t', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 't'];
+        let letter_vec: Vec<char> = vec!['T', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'T'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -389,7 +389,7 @@ mod tests {
     #[test]
     fn test_upward_diagonal_otto() {
         let play_vec: Vec<usize> = vec![0, 1, 1, 2, 2, 5, 2, 3, 3, 5, 3, 5, 3];
-        let letter_vec: Vec<char> = vec!['o', 't', 't', 't', 't', 't', 't', 't', 't', 't', 't', 't', 'o'];
+        let letter_vec: Vec<char> = vec!['O', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'O'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -402,7 +402,7 @@ mod tests {
     #[test]
     fn test_downward_diagonal_toot() {
         let play_vec: Vec<usize> = vec![0, 0, 0, 5, 0, 1, 1, 5, 1, 2, 2, 5, 3];
-        let letter_vec: Vec<char> = vec!['o', 'o', 'o', 'o', 't', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 't' ];
+        let letter_vec: Vec<char> = vec!['O', 'O', 'O', 'O', 'T', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'T' ];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -415,7 +415,7 @@ mod tests {
     #[test]
     fn test_downward_diagonal_otto() {
         let play_vec: Vec<usize> = vec![0, 0, 0, 5, 0, 1, 1, 5, 1, 2, 2, 5, 3];
-        let letter_vec: Vec<char> = vec!['t', 't', 't', 't', 'o', 't', 't', 't', 't', 't', 't', 't', 'o' ];
+        let letter_vec: Vec<char> = vec!['T', 'T', 'T', 'T', 'O', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'O' ];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -428,7 +428,7 @@ mod tests {
     #[test]
     fn test_up_down_toot() {
         let play_vec: Vec<usize> = vec![0, 0, 0, 0];
-        let letter_vec: Vec<char> = vec!['t', 'o', 'o', 't'];
+        let letter_vec: Vec<char> = vec!['T', 'O', 'O', 'T'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -441,7 +441,7 @@ mod tests {
     #[test]
     fn test_up_down_otto() {
         let play_vec: Vec<usize> = vec![0, 0, 0, 0];
-        let letter_vec: Vec<char> = vec!['o', 't', 't', 'o'];
+        let letter_vec: Vec<char> = vec!['O', 'T', 'T', 'O'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -454,7 +454,7 @@ mod tests {
     #[test]
     fn test_column_full() {
         let play_vec: Vec<usize> = vec![0, 0, 0, 0, 0, 0, 0];
-        let letter_vec: Vec<char> = vec!['t', 't', 'o', 't', 'o', 't', 't'];
+        let letter_vec: Vec<char> = vec!['T', 'T', 'O', 'T', 'O', 'T', 'T'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -467,7 +467,7 @@ mod tests {
     #[test]
     fn test_out_of_bounds() {
         let play_vec: Vec<usize> = vec![9];
-        let letter_vec: Vec<char> = vec!['t'];
+        let letter_vec: Vec<char> = vec!['T'];
         let mut game = TootOtto::init(4, 6);
         let mut result = Message::NextPlayer(Player::PlayerOne);
         for i in 0..play_vec.len() {
@@ -493,7 +493,7 @@ mod tests {
     #[test]
     fn test_normal_game() {
         let play_vec: Vec<usize> = vec![3, 5, 2, 4, 0, 1];
-        let letter_vec: Vec<char> = vec!['t', 't', 'o', 't', 't', 'o']
+        let letter_vec: Vec<char> = vec!['T', 'T', 'O', 'T', 'T', 'O']
             ;
         let mut game = TootOtto::init(7, 7);
         let mut result = Message::NextPlayer(Player::PlayerOne);
