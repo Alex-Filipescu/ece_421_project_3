@@ -5,8 +5,9 @@ pub fn home() -> Html {
     html! {
         <div class = "pageContent">
         <div class = "instructions">
-            <h1>{"Home"}</h1>
-            <h2>{"Welcome!"}</h2>
+            <h1 class = "home">{"Home"}</h1>
+            <img src = "img/logo.svg"/>
+            <h2 class = "welcome">{"Welcome!"}</h2>
             <h3>{"Connect 4 Instructions:"}</h3>
             <p>
                 {"First one to get 4 tokens in a row wins!"}

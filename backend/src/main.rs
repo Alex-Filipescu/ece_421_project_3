@@ -123,7 +123,7 @@ fn get_hint()-> JsonValue{
         response["token"] = "X".to_string().into();
     }else {
         let mut game = TOOT_OTTO.lock().unwrap();
-        let mut suggest = TootOttoBot::new(game.clone(), 1000, Player::PlayerOne);
+        let mut suggest = TootOttoBot::new(game.clone(), 500, Player::PlayerOne);
         let suggested_move = suggest.select_move();
         response["bot_move"] = suggested_move.0.into();
         response["token"] = suggested_move.1.to_string().into();

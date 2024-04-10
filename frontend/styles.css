@@ -311,3 +311,16 @@ input::-webkit-color-swatch {
   text-align:center;
   padding:30px;
 }
+
+img{
+  height:200px;
+  width:400px;
+}
+
+.home{
+  margin-bottom:0;
+}
+
+.welcome{
+  margin-top:0;
+}

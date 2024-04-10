@@ -74,9 +74,9 @@ pub async fn user_move(col_index:usize, cell_states: UseStateHandle<Vec<Vec<char
         return
     }
    
-    let delay = Duration::new(1, 0);
+    // let delay = Duration::new(0, 500);
 
-    sleep(delay).await;
+    // sleep(delay).await;
     // Call bot_move to get the next move
     bot_move(cell_states.clone(), updated_cells.clone(), result_message.clone()).await;
    
