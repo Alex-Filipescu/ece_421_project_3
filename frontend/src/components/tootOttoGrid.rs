@@ -323,46 +323,56 @@ pub fn tootOttoGrid()-> Html{
 
     html! {
         <div class = "tootOttoGrid">
-            <div class="sliderContainer">
-                <div class="leftSection"></div>
+                <div class="sliderContainer">
+                <div class="leftSection">
+                </div>
                 <div class="middleSection">
-                    <Slider diff_change={diff_change.clone()}></Slider>
+                    <div class = "sliderLeft">
+                        <span>
+                        {"Select Difficulty:"}
+                        </span>
+                    </div>
+                    <div class = "sliderMiddle">
+                        <Slider diff_change={diff_change.clone()}></Slider>
+                    </div>
+                    <div class = "sliderRight">
+                    </div>
                 </div>
                 <div class="rightSection">
                 </div>
             </div>
 
             <div class = "gridControls">
-            <div class = "gridLeft"></div>
-            <div class = "gridMiddle">
-                <div class="grid-container">
-                    <div class="grid">
-                        <Col index = 0 on_click={onclick_callback.clone() } cells={cell_states.clone()[0].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
-                        <Col index = 1 on_click={onclick_callback.clone() } cells={cell_states.clone()[1].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
-                        <Col index = 2 on_click={onclick_callback.clone() } cells={cell_states.clone()[2].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
-                        <Col index = 3 on_click={onclick_callback.clone() } cells={cell_states.clone()[3].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
-                        <Col index = 4 on_click={onclick_callback.clone() } cells={cell_states.clone()[4].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
-                        <Col index = 5 on_click={onclick_callback.clone() } cells={cell_states.clone()[5].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                <div class = "gridLeft"></div>
+                <div class = "gridMiddle">
+                    <div class="grid-container">
+                        <div class="grid">
+                            <Col index = 0 on_click={onclick_callback.clone() } cells={cell_states.clone()[0].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                            <Col index = 1 on_click={onclick_callback.clone() } cells={cell_states.clone()[1].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                            <Col index = 2 on_click={onclick_callback.clone() } cells={cell_states.clone()[2].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                            <Col index = 3 on_click={onclick_callback.clone() } cells={cell_states.clone()[3].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                            <Col index = 4 on_click={onclick_callback.clone() } cells={cell_states.clone()[4].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                            <Col index = 5 on_click={onclick_callback.clone() } cells={cell_states.clone()[5].clone() } cell_num = 4 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
+                        </div>
                     </div>
+
+                    <p>{format!("Result: {}", *result_message)}</p>
+                    <button {onmouseover} {onmouseleave}>{"Hint"}</button>
+                    <p style={format!("display: {}", if *hint_visible { "block" } else { "none" })}>{format!("Column: {} Token:{}",*hint_col, *hint_tok)}</p> 
                 </div>
 
-                <p>{format!("Result: {}", *result_message)}</p>
-                <button {onmouseover} {onmouseleave}>{"Hint"}</button>
-                <p style={format!("display: {}", if *hint_visible { "block" } else { "none" })}>{format!("Column: {} Token:{}",*hint_col, *hint_tok)}</p> 
-            </div>
-
-            <div class = "gridRight">
-                <button class = "refreshButton" {onclick}>{"Refresh"}</button>
-                <div class="switchContainer">
-                    <div class = "innerSwitch">
-                    <span class="switchText">{'T'}</span>
-                    <label class="switch">
-                        <input type="checkbox" checked={*token_state} onchange={toggle_switch.clone()} />
-                        <span class="slider"></span>
-                    </label>
-                    <span class="switchText">{'O'}</span>
+                <div class = "gridRight">
+                    <button class = "refreshButton" {onclick}>{"Refresh"}</button>
+                    <div class="switchContainer">
+                        <div class = "innerSwitch">
+                        <span class="switchText">{'T'}</span>
+                        <label class="switch">
+                            <input type="checkbox" checked={*token_state} onchange={toggle_switch.clone()} />
+                            <span class="slider"></span>
+                        </label>
+                        <span class="switchText">{'O'}</span>
+                        </div>
                     </div>
-                </div>
                 </div>
         </div>
 

@@ -94,7 +94,7 @@ fn receive_col_num(message: Json<TurnInfo>)-> String{
         }
         _ => { response = "3".to_string();}
     }
-
+    println!("{}", format!("User response:{}", response.to_string()));
     response
 }
 
@@ -249,6 +249,9 @@ fn bot_move() -> JsonValue {
         }
         _ => {response["message"] = "3".into();}
     }
+
+    println!("{}", format!("Bot response:{}", response.to_string()));
+
     response
 }
 
@@ -295,7 +298,7 @@ fn index() -> io::Result<NamedFile> {
 
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
-        .mount("/", routes![index, files,receive_game,receive_col_num, bot_move, refresh_game, receive_difficulty, get_hint])
+        .mount("/", routes![index, files, receive_game,receive_col_num, bot_move, refresh_game, receive_difficulty, get_hint])
         .attach(make_cors())
 }
 fn main() {

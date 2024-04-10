@@ -33,7 +33,10 @@ pub fn tootOtto() -> Html {
         }
     });
     html! {
-        <div>
+        <div class = "pageContent">
+        <div class = "titleContainer">        
+            <h1>{"Toot Otto"}</h1>
+        </div>
        <TootOttoGrid>
        </TootOttoGrid>
        </div>

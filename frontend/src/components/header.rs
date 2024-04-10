@@ -2,11 +2,11 @@ use yew::prelude::*;
 
 use crate::router::{switch, RootRoutes};
 use yew_router::prelude::*;
-use web_sys::console;
 
 #[function_component(Header)]
 pub fn header() -> Html {
 
+   
     html! {
         <div class = "header-container">
         <BrowserRouter>

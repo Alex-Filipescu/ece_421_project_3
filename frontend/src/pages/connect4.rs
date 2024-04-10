@@ -35,7 +35,10 @@ pub fn connect4() -> Html {
     });
 
     html! {
-        <div>
+        <div class = "pageContent">
+        <div class = "titleContainer">
+        <h1>{"Connect 4"}</h1>
+        </div>
        <Connect4Grid>
        </Connect4Grid>
         </div>

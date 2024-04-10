@@ -4,22 +4,29 @@
   grid-gap: 5px;
   width: fit-content;
 }
-
+p, div, button{
+  font-family: "Nunito Sans", sans-serif;
+}
+body{
+  padding:0;
+  background-color:aliceblue;
+}
 .cell {
   width: 60px;
   height: 60px;
   background-color: white;
   opacity: 0.7;
   border: 1px solid black;
+  color:black;
+  font-weight:bold;
   cursor: pointer;
 }
 
 .cell p{
   position: relative;
-  top: 10%;
 }
 .column:hover {
-  background-color: rgb(62, 139, 165);
+  background-color: rgb(73, 155, 227);
 
 }
 
@@ -43,7 +50,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: #f7d3f6;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -61,11 +68,11 @@
 }
 
 input:checked + .slider {
-  background-color: #2196f3;
+  background-color: #c6a4fc;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
+  box-shadow: 0 0 1px #c6a4fc;
 }
 
 input:checked + .slider:before {
@@ -84,8 +91,7 @@ input:checked + .slider:before {
 }
 
 .header-container {
-  color: black;
-  padding: 10px;
+  color: #023047;
   font-size:20px;
   justify-content: center;
 }
@@ -93,25 +99,26 @@ input:checked + .slider:before {
 .header-list {
   list-style-type: none;
   margin: 0;
-  padding: 0;
+  margin-bottom:20px;
+  padding-top: 40px;
+  padding-bottom:40px;
+  background-color:aliceblue;
   display: flex;
   justify-content: center;
 }
 
 .header-item {
-  margin-right: 20px;
+  margin-right: 40px;
 }
-.header-item-active {
-  text-decoration: underline;
-  /* Add any additional styling for the active header item */
-}
+
 a {
   text-decoration: none;
-  color: black;
+  color: #023047;
 }
 
 a:hover {
-  color: lightgray;
+  text-decoration:solid;
+  color: rgb(186, 178, 178);
 }
 
 .cell {
@@ -120,11 +127,11 @@ a:hover {
 
 .redButton.horizTranslate2 {
   -webkit-transition: -webkit-transform 0.1s linear;
-  -webkit-transform: translateX(20px);
+  -webkit-transform: translateX(17px);
 }
 .redButton.horizTranslate3 {
   -webkit-transition: -webkit-transform 0.1s linear;
-  -webkit-transform: translateX(40px);
+  -webkit-transform: translateX(35px);
 }
 .redButton.horizTranslate1 {
   -webkit-transition: -webkit-transform 0.1s linear;
@@ -146,7 +153,7 @@ a:hover {
 .redButton {
   width: 16px;
   height: 16px;
-  background-color: #db3d2b;
+  background-color: #f7d3f6;
   border-radius: 8px;
   position: relative;
   top: 6px;
@@ -157,7 +164,7 @@ a:hover {
   display: inline-block;
   position: absolute;
   /* top: 23px; */
-  color: black; 
+  color: #023047; 
   font-size: 10pt;
   text-align: center;
 }
@@ -165,7 +172,7 @@ a:hover {
   display: inline-block;
   width: 20px;
   padding-bottom: 33px;
-  color:black;
+  color: #023047;
   cursor: default;
   user-select: none;
 }
@@ -180,7 +187,13 @@ a:hover {
 .page{
   display:flex;
   justify-content:center;
-  font-size:16px;
+  font-size:18px;
+}
+
+.pageContent{
+  background-color:rgba(255, 255, 255, 0.616);
+  padding-bottom:20px;
+  border-radius:10%;
 }
 .sliderContainer {
   display: flex;
@@ -199,6 +212,21 @@ a:hover {
   justify-content: center; /* Center the content horizontally */
   align-items: center; /* Center the content vertically */
 }
+.sliderLeft,
+.sliderRight{
+  flex:4;
+  text-align:right;  
+  position:relative;
+  top:20%;
+}
+.sliderMiddle {
+  flex: 3; 
+  display: flex;
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+}
+
+
 
 .gridControls {
   display: flex;
@@ -243,4 +271,43 @@ a:hover {
 .color-choosers{
   position:relative;
   top:50px;
+  display:flex;
+}
+
+.titleContainer{
+  text-align:center;
+}
+
+button{
+  border-style:none;
+  padding:10px 20px 10px 20px;
+  background-color:#fca657;
+  font-size:16px;
+  border-radius:5%;
+}
+button:hover{
+  background-color:#f7851b;
+}
+
+input{
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  border: 1px;
+  outline: none;
+  margin-bottom:3px;
+  -webkit-appearance: none;
+}
+
+input::-webkit-color-swatch-wrapper {
+  padding: 0; 
+}
+input::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.instructions{
+  text-align:center;
+  padding:30px;
 }

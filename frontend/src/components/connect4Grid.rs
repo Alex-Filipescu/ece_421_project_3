@@ -273,9 +273,19 @@ pub fn connect4grid() -> Html {
     html! { 
         <div class = "connect4Grid">
             <div class="sliderContainer">
-                <div class="leftSection"></div>
+                <div class="leftSection">
+                </div>
                 <div class="middleSection">
-                    <Slider diff_change={diff_change.clone()}></Slider>
+                    <div class = "sliderLeft">
+                        <span>
+                        {"Select Difficulty:"}
+                        </span>
+                    </div>
+                    <div class = "sliderMiddle">
+                        <Slider diff_change={diff_change.clone()}></Slider>
+                    </div>
+                    <div class = "sliderRight">
+                    </div>
                 </div>
                 <div class="rightSection">
                 </div>
@@ -301,13 +311,17 @@ pub fn connect4grid() -> Html {
                 <div class = "gridRight">
                     <button class = "refreshButton" {onclick}>{"Refresh"}</button>
                     <div class = "color-choosers">
-                        <label>{"Color for X: "}
+                        <div>
+                        <label>{"X Color "}
                         <input type="color" value={(*user_color).to_string()} onchange={on_user_color_change} />
                         </label>
-                        <br />
-                        <label>{"Color for O: "}
+                        </div>
+                        
+                        <div>
+                        <label>{"O Color "}
                         <input type="color" value={(*bot_color).to_string()} onchange={on_bot_color_change} />
                         </label>
+                        </div>
                     </div>
                 </div>
             </div>
