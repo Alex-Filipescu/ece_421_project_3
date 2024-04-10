@@ -221,9 +221,6 @@ impl ConnectFour {
         if self.winner.is_player(){
             return Message::Winner(self.winner);
         }
-        if !&self.board.check_available_move() {
-            return Message::Tie;
-        }
         let current_player = &self.cycle_next_player();
         let mut play_location = &self.board.play_move(column, current_player.clone());
         if play_location.is_none(){
@@ -232,6 +229,9 @@ impl ConnectFour {
         if self.board.check_winner(current_player.clone(), &mut play_location.clone().unwrap()){
             self.winner = current_player.clone();
             return Message::Winner(current_player.clone())
+        }
+        if !&self.board.check_available_move() {
+            return Message::Tie;
         }
         return Message::NextPlayer(self.next_player.clone());
 

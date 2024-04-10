@@ -267,7 +267,7 @@ impl BoardState {
                 return true;
             }
         }
-        false
+        return false;
     }
 
 }
@@ -290,9 +290,6 @@ impl TootOtto {
         if self.winner.is_player(){
             return Message::Winner(self.winner);
         }
-        if !&self.board.check_available_move() {
-            return Message::Tie;
-        }
         &self.cycle_next_player();
         let mut play_location = &self.board.play_move(column, letter);
         if play_location.is_none(){
@@ -303,6 +300,9 @@ impl TootOtto {
             self.winner = Player::PlayerOne;
         } else if result == Message::Winner(Player::PlayerTwo){
             self.winner = Player::PlayerTwo
+        }
+        if !&self.board.check_available_move() {
+            return Message::Tie;
         }
         return if result == Message::NoWinner {
             Message::NextPlayer(self.next_player.clone())
@@ -503,6 +503,16 @@ mod tests {
         println!("{:?}", game);
         assert_eq!(Message::Winner(Player::PlayerOne), result);
     }
-
-    // TODO: Add tie test case
+    #[test]
+    fn test_tie() {
+        let play_vec: Vec<usize> = vec![0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5];
+        let letter_vec: Vec<char> = vec!['T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T'];
+        let mut game = TootOtto::init(4, 6);
+        let mut result = Message::NextPlayer(Player::PlayerOne);
+        for i in 0..play_vec.len() {
+            result = game.play_move(play_vec[i], letter_vec[i]);
+        }
+        println!("{:?}", game);
+        assert_eq!(Message::Tie, result);
+    }
 }
