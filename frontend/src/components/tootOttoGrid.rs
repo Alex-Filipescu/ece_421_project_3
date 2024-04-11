@@ -227,12 +227,14 @@ pub fn tootOttoGrid()-> Html{
     let onclick = { //for button refresh
         let cell_states = cell_states.clone();
         let result_message = result_message.clone();
+        let running = running.clone();
 
         Callback::from(move |_| 
             {
                 wasm_bindgen_futures::spawn_local(refresh()); // Call set_difficulty
                 cell_states.set(vec![vec![' '; 4]; 6]);
                 result_message.set(" ".to_string());
+                running.set(false);
 
             }
         )
@@ -240,12 +242,14 @@ pub fn tootOttoGrid()-> Html{
     let diff_change = { //when user changes difficulty
         let cell_states = cell_states.clone();
         let result_message = result_message.clone();
+        let running = running.clone();
 
         Callback::from(move |diff_change:usize| 
             {
                 wasm_bindgen_futures::spawn_local(refresh()); // Call set_difficulty
                 cell_states.set(vec![vec![' '; 4]; 6]);
-                result_message.set(" ".to_string())
+                result_message.set(" ".to_string());
+                running.set(false);
 
             }
         )
