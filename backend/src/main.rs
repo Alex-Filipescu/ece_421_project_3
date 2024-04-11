@@ -52,6 +52,7 @@ struct CountData {
     count: u32,
 }
 
+
 #[post("/api/getCol", data = "<message>")]
 fn receive_col_num(message: Json<TurnInfo>)-> String{
     let mut result = RESULT.lock().unwrap();
@@ -216,7 +217,7 @@ fn bot_move() -> JsonValue {
         };
         if connect4{
             let mut game = CONNECT_FOUR.lock().unwrap();
-            let mut mcst = ConnectFourBot::new(game.clone(), difficulty_level, Player::PlayerTwo);
+            let mut mcst = ConnectFourBot::new(game.clone(), 1, Player::PlayerTwo);
             let bot_move = mcst.select_move();
             *result = game.play_move(bot_move);
             println!("bot_move: {:?}", bot_move);

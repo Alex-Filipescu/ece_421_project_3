@@ -197,12 +197,14 @@ pub fn connect4grid() -> Html {
         let result_message = result_message.clone();
         let user_color = user_color.clone();
         let bot_color = bot_color.clone();
+        let running = running.clone();
         Callback::from(move |_| {
             wasm_bindgen_futures::spawn_local(refresh()); // Call set_difficulty
             cell_states.set(vec![vec![' '; 6]; 7]);
             result_message.set(" ".to_string());
             user_color.set("#FFFFFF".to_string());
             bot_color.set("#FFFFFF".to_string());
+            running.set(false);
         })
     };
     let diff_change = {
@@ -211,12 +213,16 @@ pub fn connect4grid() -> Html {
         let result_message = result_message.clone();
         let user_color = user_color.clone();
         let bot_color = bot_color.clone();
+        let running = running.clone();
+
         Callback::from(move |diff_change: usize| {
             wasm_bindgen_futures::spawn_local(refresh());
             cell_states.set(vec![vec![' '; 6]; 7]);
             result_message.set(" ".to_string());
             user_color.set("#FFFFFF".to_string());
             bot_color.set("#FFFFFF".to_string());
+            running.set(false);
+
         })
     };
 
