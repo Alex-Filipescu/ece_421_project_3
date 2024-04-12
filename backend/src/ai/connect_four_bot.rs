@@ -81,24 +81,20 @@ impl ConnectFourBot {
                 | X | X | X | O |   |   | O |
             */
 
-            let mut is_bad_move = false;
-    
-            for column in 0..self.game.board.max_cols {
-                let mut game_clone = self.game.clone();
-    
-                game_clone.play_move(best_column);
-    
-                let result = game_clone.play_move(column);
-                if result == Message::Winner(self.get_opponent()) || result == Message::Tie || result == Message::ColumnFull {
-                    is_bad_move = true;
-                    break;
-                }
-            }
-    
-            if is_bad_move == false {
-                return best_column;
-            } else {
+            let mut game_clone = self.game.clone();
+
+            let result = game_clone.play_move(best_column);
+            if result == Message::ColumnFull {
                 ind += 1;
+                continue;
+            }
+
+            let result = game_clone.play_move(best_column);  // plays as opponent to check if opponent benefits from move
+            if result == Message::Winner(self.get_opponent()) || result == Message::Tie {
+                ind += 1;
+                continue;
+            } else {
+                return best_column;
             }
         }
         return columns_sorted[0];
