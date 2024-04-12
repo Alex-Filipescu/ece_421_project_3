@@ -199,8 +199,6 @@ pub fn connect4grid() -> Html {
         //for button refresh
         let cell_states = cell_states.clone();
         let result_message = result_message.clone();
-        let user_color = user_color.clone();
-        let bot_color = bot_color.clone();
         let running = running.clone();
         let hint_visible = hint_visible.clone();
 
@@ -208,8 +206,6 @@ pub fn connect4grid() -> Html {
             wasm_bindgen_futures::spawn_local(refresh()); // Call set_difficulty
             cell_states.set(vec![vec![' '; 6]; 7]);
             result_message.set(" ".to_string());
-            user_color.set("#FFFFFF".to_string());
-            bot_color.set("#FFFFFF".to_string());
             running.set(false);
             hint_visible.set(false);
         })
@@ -218,8 +214,6 @@ pub fn connect4grid() -> Html {
         //when user changes difficulty
         let cell_states = cell_states.clone();
         let result_message = result_message.clone();
-        let user_color = user_color.clone();
-        let bot_color = bot_color.clone();
         let running = running.clone();
         let hint_visible = hint_visible.clone();
 
@@ -227,8 +221,6 @@ pub fn connect4grid() -> Html {
             wasm_bindgen_futures::spawn_local(refresh());
             cell_states.set(vec![vec![' '; 6]; 7]);
             result_message.set(" ".to_string());
-            user_color.set("#FFFFFF".to_string());
-            bot_color.set("#FFFFFF".to_string());
             running.set(false);
             hint_visible.set(false);
         })

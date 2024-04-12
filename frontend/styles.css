@@ -50,7 +50,7 @@ body{
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #f7d3f6;
+  background-color: #023047;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -62,17 +62,17 @@ body{
   width: 26px;
   left: 4px;
   bottom: 4px;
-  background-color: white;
+  background-color: #f7d3f6;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 
 input:checked + .slider {
-  background-color: #c6a4fc;
+  background-color: #023047;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #c6a4fc;
+  box-shadow: 0 0 1px #023047;
 }
 
 input:checked + .slider:before {
@@ -225,8 +225,6 @@ a:hover {
   justify-content: center; /* Center the content horizontally */
   align-items: center; /* Center the content vertically */
 }
-
-
 
 .gridControls {
   display: flex;

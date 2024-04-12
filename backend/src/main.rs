@@ -147,7 +147,7 @@ pub fn update_game_choice(game: String) {
 fn receive_difficulty(message: Json<JsonMessage>){
     println!("received difficulty: {}", message.text);
     let difficulty_level = match message.text.as_str() {
-        "easy" => 5,
+        "easy" => 1,
         "medium" => 500,
         "hard" => 1000,
         _ => {
