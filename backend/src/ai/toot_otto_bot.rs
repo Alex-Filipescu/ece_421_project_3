@@ -82,25 +82,29 @@ impl TootOttoBot {
         while ind < columns_sorted.len() {
             let best_column = columns_sorted[ind];
 
-            // captures case where placing the "best move" would give the opponent a win
-            let mut is_bad_move = false;
-    
-            for column in 0..self.game.board.max_cols {
-                let mut game_clone = self.game.clone();
-    
-                game_clone.play_move(best_column, letter);
-    
-                let result = game_clone.play_move(column, letter);
-                if result == Message::Winner(self.get_opponent()) || result == Message::Tie || result == Message::ColumnFull {
-                    is_bad_move = true;
-                    break;
-                }
-            }
-    
-            if is_bad_move == false {
-                return (scores[ind], best_column);
-            } else {
+            let mut game_clone = self.game.clone();
+
+            let result = game_clone.play_move(best_column, letter);
+            if result == Message::ColumnFull {
                 ind += 1;
+                continue;
+            }
+
+            let mut game_clone_t = game_clone.clone();
+            let mut game_clone_o = game_clone.clone();
+
+            let result = game_clone_t.play_move(best_column, 'T');  // plays as opponent to check if opponent benefits from move
+            if result == Message::Winner(self.get_opponent()) || result == Message::Tie {
+                ind += 1;
+                continue;
+            } 
+            
+            let result = game_clone_o.play_move(best_column, 'O');  // plays as opponent to check if opponent benefits from move
+            if result == Message::Winner(self.get_opponent()) || result == Message::Tie {
+                ind += 1;
+                continue;
+            } else {
+                return (scores[ind], best_column);
             }
         }
         return (scores[0], columns_sorted[0]);
