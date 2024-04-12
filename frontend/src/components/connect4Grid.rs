@@ -84,7 +84,7 @@ pub async fn user_move(
         return;
     }
 
-    let delay = Duration::new(1, 0);
+    let delay = Duration::new(0, 5000000);
     sleep(delay).await;
     // Call bot_move to get the next move
     bot_move(cell_states.clone(), updated_cells.clone(), result_message.clone()).await;
