@@ -130,7 +130,7 @@ impl ConnectFourBot {
                     continue;
                 }
 
-                loop {
+                for _ in 0..(self.game.board.max_cols*self.game.board.max_rows) {
                     let mut rng = thread_rng();
                     if rng.gen() {
                         let rand_col: usize = rng.gen_range(0..(self.game.board.max_cols));

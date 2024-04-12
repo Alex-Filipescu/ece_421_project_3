@@ -103,7 +103,6 @@ impl TootOttoBot {
                 ind += 1;
             }
         }
-
         return (scores[0], columns_sorted[0]);
     }
 
@@ -112,8 +111,7 @@ impl TootOttoBot {
             Message::Winner(player) if player == self.get_opponent() => -2,
             Message::Winner(player) if player == self.player => 1, 
             Message::Tie => -1,
-            Message::ColumnFull => 0,
-            _ => -2048
+            _ => 0
         }
     }
   
@@ -135,7 +133,7 @@ impl TootOttoBot {
                     continue;
                 }
 
-                loop {
+                for _ in 0..(self.game.board.max_cols*self.game.board.max_rows) {
                     let mut rng = thread_rng();
                     if rng.gen() {
                         let rand_column: usize = rng.gen_range(0..(self.game.board.max_cols));
@@ -143,7 +141,11 @@ impl TootOttoBot {
                         result = game_clone.play_move(rand_column, rand_letter);
                     }
 
-                    if self.score_game(result) != -2048 {
+                    if result == Message::ColumnFull {
+                        continue;
+                    }
+
+                    if self.score_game(result) != 0 {
                         scores[column] += self.score_game(result);
                         break;
                     }
