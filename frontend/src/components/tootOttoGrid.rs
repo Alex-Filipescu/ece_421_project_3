@@ -19,7 +19,7 @@ struct botResponse{
     token:String,
     message:String
 }
-pub async fn user_move(col_index:usize, cell_states: UseStateHandle<Vec<Vec<char>>>, token:char, result_message:UseStateHandle<String>){
+pub async fn user_move(col_index:usize, cell_states: UseStateHandle<Vec<Vec<char>>>, token:char, result_message:UseStateHandle<String>, hint_visible:UseStateHandle<bool>){
     let client = Client::new();
     let endpoint = "http://localhost:8000/api/getCol";
     let col_num = col_index.to_string();
@@ -28,6 +28,7 @@ pub async fn user_move(col_index:usize, cell_states: UseStateHandle<Vec<Vec<char
         "token": token,
     });
 
+    hint_visible.set(false);
 
     // Update cells after receiving the response
     let mut updated_cells = cell_states.to_vec().clone();
@@ -73,7 +74,6 @@ pub async fn user_move(col_index:usize, cell_states: UseStateHandle<Vec<Vec<char
         result_message.set(res_msg.to_string());
         return
     }
-   
     let delay = Duration::new(0, 300);
 
     sleep(delay).await;
@@ -198,12 +198,14 @@ pub fn tootOttoGrid()-> Html{
         let token_state = token_state.clone();
         let result_message = result_message.clone();
         let running = running.clone();
+        let hint_visible = hint_visible.clone();
 
         Callback::from(move |col_index: usize| {
             let cell_states = cell_states.clone();
             let token_state = token_state.clone();
             let result_message = result_message.clone();
             let running = running.clone();
+            let hint_visible = hint_visible.clone();
 
             let token = match *token_state {
                 true=>'O',
@@ -216,7 +218,7 @@ pub fn tootOttoGrid()-> Html{
             }
             running.set(true);
             if *result_message == " ".to_string(){ //game did not end
-                let task = user_move(col_index, cell_states.clone(),token,result_message.clone());
+                let task = user_move(col_index, cell_states.clone(),token,result_message.clone(), hint_visible.clone());
                 spawn_local(async move {
                     task.await;
                     running.set(false); // Set is_user_move_running to false after user_move finishes
@@ -228,6 +230,7 @@ pub fn tootOttoGrid()-> Html{
         let cell_states = cell_states.clone();
         let result_message = result_message.clone();
         let running = running.clone();
+        let hint_visible = hint_visible.clone();
 
         Callback::from(move |_| 
             {
@@ -235,7 +238,7 @@ pub fn tootOttoGrid()-> Html{
                 cell_states.set(vec![vec![' '; 4]; 6]);
                 result_message.set(" ".to_string());
                 running.set(false);
-
+                hint_visible.set(false);
             }
         )
     };
@@ -243,6 +246,7 @@ pub fn tootOttoGrid()-> Html{
         let cell_states = cell_states.clone();
         let result_message = result_message.clone();
         let running = running.clone();
+        let hint_visible = hint_visible.clone();
 
         Callback::from(move |diff_change:usize| 
             {
@@ -250,7 +254,7 @@ pub fn tootOttoGrid()-> Html{
                 cell_states.set(vec![vec![' '; 4]; 6]);
                 result_message.set(" ".to_string());
                 running.set(false);
-
+                hint_visible.set(false);
             }
         )
     };
@@ -266,64 +270,19 @@ pub fn tootOttoGrid()-> Html{
     };
 
     
-    let onmouseover = {
+    let hintClick = {
         let hint_col_clone = hint_col.clone();
         let hint_tok_clone = hint_tok.clone();
         let hint_visible = hint_visible.clone();
+        let result_message = result_message.clone();
 
         Callback::from(move |_| {
-            wasm_bindgen_futures::spawn_local(get_hint(hint_col_clone.clone(), hint_tok_clone.clone())); 
-            hint_visible.set(true);
-        })
-    };
-
-    let onmouseleave = {
-        let hint_col_clone = hint_col.clone();
-        let hint_tok_clone = hint_tok.clone();
-        let hint_visible = hint_visible.clone();
-
-        Callback::from(move |_| {
-            hint_col_clone.set(" ".to_string()); // Reset hint when mouse leaves
-            hint_tok_clone.set(" ".to_string()); // Reset hint when mouse leaves
-            hint_visible.set(false);
-        })
-    };
-
-    let on_user_color_change = {
-        let user_color = user_color.clone();
-        Callback::from(move |e: Event| {
-            // Clone user_color inside the closure to avoid borrowing issues
-            let user_color = user_color.clone();
-    
-            // When events are created, the target is initially undefined.
-            // It's only when dispatched does the target get added.
-            if let Some(target) = e.target() {
-                // Convert the event target to an HTML input element
-                if let Ok(input) = target.dyn_into::<HtmlInputElement>() {
-                    // Set the color value from the input element
-                    user_color.set(input.value());
-                }
+            if *result_message == " ".to_string(){ //game did not end
+                wasm_bindgen_futures::spawn_local(get_hint(hint_col_clone.clone(), hint_tok_clone.clone())); 
+                hint_visible.set(true);
             }
         })
     };
-    
-
-    let on_bot_color_change = {
-        let bot_color = bot_color.clone();
-        Callback::from(move |e: Event| {
-            // When events are created the target is undefined, it's only
-            // when dispatched does the target get added.
-            let target: Option<EventTarget> = e.target();
-            // Events can bubble so this listener might catch events from child
-            // elements which are not of type HtmlInputElement
-            let input = target.and_then(|t| t.dyn_into::<HtmlInputElement>().ok());
-
-            if let Some(input) = input {
-                bot_color.set(input.value());
-            }
-        })
-    };
-
 
     html! {
         <div class = "tootOttoGrid">
@@ -361,8 +320,8 @@ pub fn tootOttoGrid()-> Html{
                     </div>
 
                     <p>{format!("Result: {}", *result_message)}</p>
-                    <button {onmouseover} {onmouseleave}>{"Hint"}</button>
-                    <p style={format!("display: {}", if *hint_visible { "block" } else { "none" })}>{format!("Column: {} Token:{}",*hint_col, *hint_tok)}</p> 
+                    <button onclick = {hintClick}>{"Hint"}</button>
+                    <p class = "hint-text" style={format!("display: {}", if *hint_visible { "inline" } else { "none" })}>{format!("Column: {} Token:{}",*hint_col, *hint_tok)}</p> 
                 </div>
 
                 <div class = "gridRight">

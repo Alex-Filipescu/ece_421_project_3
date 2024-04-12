@@ -28,7 +28,8 @@ pub enum Msg {
 pub async fn user_move(
     col_index: usize,
     cell_states: UseStateHandle<Vec<Vec<char>>>,
-    result_message: UseStateHandle<String>
+    result_message: UseStateHandle<String>,
+    hint_visible:UseStateHandle<bool>
 ) {
     let client = Client::new();
     let endpoint = "http://localhost:8000/api/getCol";
@@ -38,6 +39,8 @@ pub async fn user_move(
         "col_num": col_num,
         "token": token,
     });
+
+    hint_visible.set(false);
 
     // Update cells
     let mut updated_cells = cell_states.to_vec().clone();
@@ -82,7 +85,6 @@ pub async fn user_move(
     }
 
     let delay = Duration::new(1, 0);
-
     sleep(delay).await;
     // Call bot_move to get the next move
     bot_move(cell_states.clone(), updated_cells.clone(), result_message.clone()).await;
@@ -168,11 +170,13 @@ pub fn connect4grid() -> Html {
         let cell_states = cell_states.clone();
         let result_message = result_message.clone();
         let running = running.clone();
+        let hint_visible = hint_visible.clone();
 
         Callback::from(move |col_index: usize| {
             let cell_states = cell_states.clone();
             let result_message = result_message.clone();
             let running = running.clone();
+            let hint_visible = hint_visible.clone();
 
             // Check if user_move is currently running
             if *running {
@@ -182,7 +186,7 @@ pub fn connect4grid() -> Html {
             running.set(true);
             if *result_message == " ".to_string() {
                 //game did not end
-                let task = user_move(col_index, cell_states.clone(), result_message.clone());
+                let task = user_move(col_index, cell_states.clone(), result_message.clone(), hint_visible.clone());
                 spawn_local(async move {
                     task.await;
                     running.set(false); // Set is_user_move_running to false after user_move finishes
@@ -198,6 +202,8 @@ pub fn connect4grid() -> Html {
         let user_color = user_color.clone();
         let bot_color = bot_color.clone();
         let running = running.clone();
+        let hint_visible = hint_visible.clone();
+
         Callback::from(move |_| {
             wasm_bindgen_futures::spawn_local(refresh()); // Call set_difficulty
             cell_states.set(vec![vec![' '; 6]; 7]);
@@ -205,6 +211,7 @@ pub fn connect4grid() -> Html {
             user_color.set("#FFFFFF".to_string());
             bot_color.set("#FFFFFF".to_string());
             running.set(false);
+            hint_visible.set(false);
         })
     };
     let diff_change = {
@@ -214,6 +221,7 @@ pub fn connect4grid() -> Html {
         let user_color = user_color.clone();
         let bot_color = bot_color.clone();
         let running = running.clone();
+        let hint_visible = hint_visible.clone();
 
         Callback::from(move |diff_change: usize| {
             wasm_bindgen_futures::spawn_local(refresh());
@@ -222,27 +230,20 @@ pub fn connect4grid() -> Html {
             user_color.set("#FFFFFF".to_string());
             bot_color.set("#FFFFFF".to_string());
             running.set(false);
-
+            hint_visible.set(false);
         })
     };
 
-    let onmouseover = {
+    let hintClick = {
         let hint_clone = hint.clone();
         let hint_visible = hint_visible.clone();
+        let result_message = result_message.clone();
 
         Callback::from(move |_| {
-            wasm_bindgen_futures::spawn_local(get_hint(hint_clone.clone()));
-            hint_visible.set(true); // Set hint visibility to true
-        })
-    };
-
-    let onmouseleave = {
-        let hint = hint.clone();
-        let hint_visible = hint_visible.clone();
-
-        Callback::from(move |_| {
-            hint.set(" ".to_string()); // Reset hint when mouse leaves
-            hint_visible.set(false); // Reset hint visibility when mouse leaves
+            if *result_message == " ".to_string(){ //game did not end
+                wasm_bindgen_futures::spawn_local(get_hint(hint_clone.clone()));
+                hint_visible.set(true); // Set hint visibility to true
+            }
         })
     };
 
@@ -310,9 +311,11 @@ pub fn connect4grid() -> Html {
                         <Col index = 6 on_click={onclick_callback.clone() } cells={cell_states.clone()[6].clone()} cell_num=6 user_color = {(*user_color).to_string()} bot_color = {(*bot_color).to_string()} />
                         </div>
                     </div>
+                    <div class = "hintContainer">
                     <p>{format!("Result: {}", *result_message)}</p>
-                    <button {onmouseover} {onmouseleave}>{"Hint"}</button>
-                    <p style={format!("display: {}", if *hint_visible { "block" } else { "none" })}>{format!("Column: {} ",*hint)}</p> // Show hint when hint_visible is true
+                    <button onclick= {hintClick}>{"Hint"}</button>
+                    <p class="hint-text" style={format!("display: {}", if *hint_visible { "inline" } else { "none" })}>{format!("Column: {} ", *hint)}</p>
+                    </div>
                 </div>
                 <div class = "gridRight">
                     <button class = "refreshButton" {onclick}>{"Refresh"}</button>
