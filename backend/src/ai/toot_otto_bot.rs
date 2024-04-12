@@ -91,7 +91,6 @@ impl TootOttoBot {
                 game_clone.play_move(best_column, letter);
     
                 let result = game_clone.play_move(column, letter);
-                println!("result: {:?}", result);
                 if result == Message::Winner(self.get_opponent()) || result == Message::Tie || result == Message::ColumnFull {
                     is_bad_move = true;
                     break;
@@ -99,20 +98,16 @@ impl TootOttoBot {
             }
     
             if is_bad_move == false {
-                println!("{:?}",scores);
                 return (scores[ind], best_column);
             } else {
                 ind += 1;
             }
         }
-        println!("{:?}",scores);
 
         return (scores[0], columns_sorted[0]);
     }
 
     fn score_game(&self, result: Message) -> i64 {
-        println!("result: {:?}", result);
-
         match result {
             Message::Winner(player) if player == self.get_opponent() => -2,
             Message::Winner(player) if player == self.player => 1, 

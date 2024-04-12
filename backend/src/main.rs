@@ -130,7 +130,6 @@ fn get_hint()-> JsonValue{
         response["token"] = suggested_move.1.to_string().into();
     }
 
-   
     response
 }
 
@@ -217,7 +216,7 @@ fn bot_move() -> JsonValue {
         };
         if connect4{
             let mut game = CONNECT_FOUR.lock().unwrap();
-            let mut mcst = ConnectFourBot::new(game.clone(), 1, Player::PlayerTwo);
+            let mut mcst = ConnectFourBot::new(game.clone(), difficulty_level, Player::PlayerTwo);
             let bot_move = mcst.select_move();
             *result = game.play_move(bot_move);
             println!("bot_move: {:?}", bot_move);
@@ -297,10 +296,18 @@ fn index() -> io::Result<NamedFile> {
     NamedFile::open(index_file_path)
 }
 
+#[catch(404)]
+fn not_found() -> Option<NamedFile> {
+    let index_file_path = "../frontend/dist/index.html";
+    println!("Requested index file location: {:?}", index_file_path);
+    NamedFile::open(index_file_path).ok()
+}
+
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
         .mount("/", routes![index, files, receive_game,receive_col_num, bot_move, refresh_game, receive_difficulty, get_hint])
         .attach(make_cors())
+        .register(catchers![not_found])
 }
 fn main() {
     rocket().launch();
